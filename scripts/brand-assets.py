@@ -76,6 +76,61 @@ for y in range(mh):
         c = [max(0, min(255, round((v - bgv * (1 - a)) / a))) for v, bgv in zip((r, g, b), bg)]
         op[x, y] = (c[0], c[1], c[2], round(a * 255))
 
+# Clean the light anti-aliased fringe: opaque light pixels touching transparency are
+# un-blended from the background (ignoring tint), a few pixels deep.
+for _ in range(3):
+    changes = []
+    for y in range(1, mh - 1):
+        for x in range(1, mw - 1):
+            r, g, b, a0 = op[x, y]
+            if a0 < 255:
+                continue
+            if all(op[nx, ny][3] == 255 for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1))):
+                continue
+            d = dist((r, g, b))
+            if d >= 110:
+                continue
+            a = max(0.0, min(1.0, (d - 8) / 100))
+            if a <= 0.02:
+                changes.append((x, y, (0, 0, 0, 0)))
+                continue
+            c = [max(0, min(255, round((v - bgv * (1 - a)) / a))) for v, bgv in zip((r, g, b), bg)]
+            changes.append((x, y, (c[0], c[1], c[2], round(a * 255))))
+    for x, y, v in changes:
+        op[x, y] = v
+
+# Drop the baked-in glow under the mark (the site draws its own); keep the ribbon tip.
+for y in range(mh):
+    if box[1] + y < 650:
+        continue
+    for x in range(mw):
+        r, g, b, a0 = op[x, y]
+        if a0 and dist((r, g, b)) < 150 and not (r < 60 and b > 60):
+            op[x, y] = (0, 0, 0, 0)
+
+# Keep only the largest connected shape (removes leftover specks of the old glow).
+seen = [[False] * mh for _ in range(mw)]
+comps = []
+for sy in range(mh):
+    for sx in range(mw):
+        if seen[sx][sy] or op[sx, sy][3] < 16:
+            continue
+        comp, dq = [], deque([(sx, sy)])
+        seen[sx][sy] = True
+        while dq:
+            x, y = dq.popleft()
+            comp.append((x, y))
+            for nx, ny in ((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)):
+                if 0 <= nx < mw and 0 <= ny < mh and not seen[nx][ny] and op[nx, ny][3] >= 16:
+                    seen[nx][ny] = True
+                    dq.append((nx, ny))
+        comps.append(comp)
+keep = set(max(comps, key=len))
+for y in range(mh):
+    for x in range(mw):
+        if op[x, y][3] and (x, y) not in keep and op[x, y][3] >= 16:
+            op[x, y] = (0, 0, 0, 0)
+
 # Trim to content and make square.
 bbox = out.getbbox()
 out = out.crop(bbox)

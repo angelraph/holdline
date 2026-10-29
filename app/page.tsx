@@ -1,344 +1,319 @@
-"use client";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { analyze, fileToBase64 } from "@/lib/client";
-import type { AnalyzeInput, Audit, Mode, RunStep } from "@/lib/types";
-import { SAMPLES } from "@/samples";
-import { PACKS, STATE_ABBR } from "@/rulepacks";
-import { LANGUAGES } from "@/lib/languages";
-import { LetterView, type Focus } from "@/components/LetterView";
-import {
-  CitationsCard, ClockCard, CompletenessCard, GuardCard, HelpCard, Packet, ReadabilityCard, ReplyCard, RunLog, SummaryCard,
-} from "@/components/Cards";
+import Link from "next/link";
+import { Nav } from "@/components/site/Nav";
+import { Footer } from "@/components/site/Footer";
+import { GlowMark } from "@/components/site/Brand";
+import { Countdown, Reveal, Ribbon, Spotlight, TiltOnScroll } from "@/components/site/Motion";
+import { GuardDemo } from "@/components/site/GuardDemo";
 
-type Health = { nebius: boolean; tavily: boolean; models: Record<string, string> | null };
-type Phase = "start" | "running" | "done";
-
-const STATES = Object.keys(STATE_ABBR);
-
-function Logo() {
+export default function Landing() {
   return (
-    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden>
-      <rect width="32" height="32" rx="8" fill="var(--hold)" />
-      <path d="M7 20h18" stroke="var(--hold-ink)" strokeWidth="2.6" strokeLinecap="round" />
-      <path d="M11 20V9M21 20V9" stroke="var(--hold-ink)" strokeWidth="2.6" strokeLinecap="round" />
-      <circle cx="16" cy="20" r="3.2" fill="#f6c453" stroke="var(--hold-ink)" strokeWidth="1.6" />
-    </svg>
-  );
-}
-
-function escapeRe(s: string) {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-export default function Home() {
-  const [phase, setPhase] = useState<Phase>("start");
-  const [mode, setMode] = useState<Mode>("receive");
-  const [health, setHealth] = useState<Health | null>(null);
-  const [text, setText] = useState("");
-  const [file, setFile] = useState<File | null>(null);
-  const [packId, setPackId] = useState("auto");
-  const [state, setState] = useState("");
-  const [lang, setLang] = useState("en");
-  const [redact, setRedact] = useState("");
-  const [over, setOver] = useState(false);
-  const [steps, setSteps] = useState<RunStep[]>([]);
-  const [status, setStatus] = useState("");
-  const [error, setError] = useState("");
-  const [audit, setAudit] = useState<Audit | null>(null);
-  const [focus, setFocus] = useState<Focus>(null);
-  const [active, setActive] = useState<number[]>([]);
-  const lastInput = useRef<AnalyzeInput | null>(null);
-  const fileInput = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetch("/api/health").then((r) => r.json()).then(setHealth).catch(() => setHealth(null));
-  }, []);
-
-  const run = useCallback(async (input: AnalyzeInput) => {
-    lastInput.current = input;
-    setPhase("running");
-    setSteps([]);
-    setStatus("Reading the letter…");
-    setError("");
-    setActive([]);
-    setFocus(null);
-    try {
-      const a = await analyze(input, { step: (s) => setSteps((p) => [...p, s]), status: setStatus });
-      setAudit(a);
-      setPhase("done");
-      window.scrollTo({ top: 0 });
-    } catch (e) {
-      setError((e as Error).message);
-      setPhase(audit ? "done" : "start");
-    }
-  }, [audit]);
-
-  const submit = async () => {
-    const names = redact.split(",").map((s) => s.trim()).filter((s) => s.length > 1);
-    let t = text;
-    for (const n of names) t = t.replace(new RegExp(escapeRe(n), "gi"), "[REDACTED]");
-    const input: AnalyzeInput = { packId, state: state || undefined, lang, mode };
-    if (file) input.file = { name: file.name, mime: file.type || "application/octet-stream", base64: await fileToBase64(file) };
-    else input.text = t;
-    run(input);
-  };
-
-  const runSample = (id: string) => {
-    const s = SAMPLES.find((x) => x.id === id)!;
-    setText(s.text);
-    setFile(null);
-    setState(s.state);
-    run({ text: s.text, packId: s.packId, state: s.state, lang, mode });
-  };
-
-  const rerun = (patch: Partial<AnalyzeInput>) => {
-    if (!lastInput.current) return;
-    if (patch.lang) setLang(patch.lang);
-    if (patch.state) setState(patch.state);
-    if (patch.mode) setMode(patch.mode);
-    run({ ...lastInput.current, ...patch });
-  };
-
-  const jump = (start: number, end: number) => {
-    setActive([]);
-    setFocus({ start, end, nonce: Date.now() });
-  };
-  const show = (ids: number[]) => {
-    setFocus(null);
-    setActive(ids);
-  };
-
-  const live = health?.nebius;
-
-  return (
-    <main className="shell">
-      <header className="topbar no-print">
-        <a className="brand" href="/" onClick={(e) => { e.preventDefault(); setPhase("start"); setAudit(null); }}>
-          <Logo />
-          <span className="brand-name">Holdline</span>
-        </a>
-        <span className="spacer" />
-        <div className="seg" role="group" aria-label="Who is using Holdline">
-          <button aria-pressed={mode === "receive"} onClick={() => (phase === "done" ? rerun({ mode: "receive" }) : setMode("receive"))}>I got a letter</button>
-          <button aria-pressed={mode === "send"} onClick={() => (phase === "done" ? rerun({ mode: "send" }) : setMode("send"))}>I&apos;m sending one</button>
-        </div>
-        {health && (
-          <span className={`pill ${live ? "live" : "offline"}`} title={live ? Object.values(health.models ?? {}).join(", ") : "Add NEBIUS_API_KEY to run Nemotron"}>
-            <span className="dot" />
-            {live ? "Live · NVIDIA Nemotron on Nebius" : "Offline mode · no AI key"}
-            {health.tavily ? " · Tavily" : ""}
-          </span>
-        )}
-      </header>
-
-      <div className="notice no-print" role="note">
-        <span aria-hidden>⚖️</span>
-        <span>
-          <b>Not legal advice.</b> Holdline shows what your letter says and what the regulation says, word for word. A Parent Center, legal aid office, or advocate can help you decide what to do.
-        </span>
-      </div>
-
-      {error && <div className="error no-print" role="alert">{error}</div>}
-
-      {phase === "start" && (
-        <>
-          <section className="hero">
-            <h1>{mode === "send" ? "Check your notice before it goes out." : "Got a letter that cuts your services or benefits?"}</h1>
-            <p>
-              {mode === "send"
-                ? "Holdline checks a draft notice against the federal rule for what it must contain, and how hard it is to read — before a family gets it."
-                : "Holdline checks it against the law. You get the real deadline to keep what you have, the parts the law requires that are missing, and a reply you can send tonight. Every line is a quote or a blank."}
-            </p>
-          </section>
-
-          <div className="start">
-            <section className="card card-pad">
-              <div className="section-title">Your letter</div>
-              <div
-                className={`drop ${over ? "over" : ""}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => fileInput.current?.click()}
-                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && fileInput.current?.click()}
-                onDragOver={(e) => { e.preventDefault(); setOver(true); }}
-                onDragLeave={() => setOver(false)}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  setOver(false);
-                  const f = e.dataTransfer.files[0];
-                  if (f) setFile(f);
-                }}
-              >
-                {file ? (
-                  <span><strong>{file.name}</strong> · {(file.size / 1024).toFixed(0)} KB · <button className="linkbtn" onClick={(e) => { e.stopPropagation(); setFile(null); }}>remove</button></span>
-                ) : (
-                  <span><strong>Upload a PDF or a phone photo</strong> of the letter, or paste the text below</span>
-                )}
-                <input ref={fileInput} type="file" accept="application/pdf,image/*" capture="environment" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-              </div>
-              {!file && (
-                <textarea className="textarea" placeholder="Paste the full letter here…" value={text} onChange={(e) => setText(e.target.value)} aria-label="Letter text" />
-              )}
-              <div className="row" style={{ marginTop: 14 }}>
-                <label className="field">
-                  Type of letter
-                  <select value={packId} onChange={(e) => setPackId(e.target.value)}>
-                    <option value="auto">Detect automatically</option>
-                    {PACKS.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
-                  </select>
-                </label>
-                <label className="field">
-                  Your state
-                  <select value={state} onChange={(e) => setState(e.target.value)}>
-                    <option value="">Detect from letter</option>
-                    {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                  </select>
-                </label>
-                <label className="field">
-                  Explain it in
-                  <select value={lang} onChange={(e) => setLang(e.target.value)}>
-                    {Object.entries(LANGUAGES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-                  </select>
-                </label>
-              </div>
-              {!file && (
-                <label className="field" style={{ marginTop: 12 }}>
-                  Hide names before checking (optional, comma-separated)
-                  <input value={redact} onChange={(e) => setRedact(e.target.value)} placeholder="e.g. Jordan, Maria Lopez" />
-                </label>
-              )}
-              <div className="row" style={{ marginTop: 16, alignItems: "center" }}>
-                <button className="btn primary" disabled={!file && text.trim().length < 40} onClick={submit}>
-                  {mode === "send" ? "Check this draft" : "Check this letter"}
-                </button>
-                <span className="src">Nothing is stored. Names you list are replaced on your device before sending.</span>
-              </div>
-            </section>
-
-            <section className="card card-pad">
-              <div className="section-title">Or try a sample letter</div>
-              <div className="samples">
-                {SAMPLES.map((s) => (
-                  <button className="sample" key={s.id} onClick={() => runSample(s.id)}>
-                    <b>{s.title}</b>
-                    <span>{s.blurb}</span>
-                    <span className="tag">{PACKS.find((p) => p.id === s.packId)?.short} · {s.state}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="src" style={{ marginTop: 10 }}>Fictional letters. No real child, family, or agency.</div>
-            </section>
-          </div>
-
-          <div className="how">
-            <div><b>1 · The real deadline</b><span>Dates are read from the page by code. “Within 10 days of this notice” becomes a calendar date, with the math shown.</span></div>
-            <div><b>2 · What the law requires</b><span>NVIDIA Nemotron checks the letter against the regulation’s own list, pulled live from ecfr.gov. Every finding points to a sentence.</span></div>
-            <div><b>3 · A reply and real help</b><span>A reply made of fixed wording, quotes, and blanks — plus your local Parent Center and legal aid, found on trusted sites only.</span></div>
-          </div>
-
-          <div className="proof">
-            <b>Why this matters.</b> In January 2026 a federal court found that one state’s Medicaid termination notices violated due process, calling them notices that
-            <blockquote>“border on the incomprehensible.”</blockquote>
-            <div className="src" style={{ marginTop: 6 }}>
-              <a href="https://healthlaw.org/resource/chianne-d-et-al-v-jason-weida-middle-district-court-of-florida/" target="_blank" rel="noreferrer">Chianne D. v. Harris (M.D. Fla. 2026)</a> · During the Medicaid unwinding, 69% of people disenrolled lost coverage for paperwork reasons (
-              <a href="https://www.kff.org/medicaid/issue-brief/medicaid-enrollment-and-unwinding-tracker/" target="_blank" rel="noreferrer">KFF</a>).
-            </div>
-          </div>
-        </>
-      )}
-
-      {phase === "running" && (
-        <section className="progress" aria-live="polite">
-          <h2>Checking your letter…</h2>
-          <div className="sub">{status}</div>
-          <ul className="steps">
-            {steps.map((s) => (
-              <li key={s.id + s.label}>
-                <span className={`ic ${s.status}`}>{s.status === "ok" ? "✓" : s.status === "error" ? "!" : "–"}</span>
-                <div>
-                  <div>{s.label}</div>
-                  {s.detail && <div className="det">{s.detail}</div>}
+    <>
+      <Nav />
+      <main>
+        {/* ---------------- Hero (Vercel pattern) ---------------- */}
+        <section className="hero2">
+          <div className="wrap frame">
+            <div className="hero2-grid">
+              <div className="hero2-copy">
+                <Countdown to="2026-11-05" label="Sample notice · coverage deadline in" />
+                <h1 className="h-xl">
+                  Keep your services.
+                  <br />
+                  <span className="grad-text">Fight back.</span>
+                </h1>
+                <div className="hero2-cta">
+                  <Link href="/check" className="pill solid lg">Check a letter <span className="arr">→</span></Link>
+                  <Link href="/check?sample=school-speech" className="pill ghost lg">Try a sample</Link>
                 </div>
-                <span className="meta">{s.model ? s.model.split("/").pop() : s.kind}</span>
-              </li>
-            ))}
-            <li>
-              <span className="ic spin" />
-              <div>{status || "Working…"}</div>
-              <span />
-            </li>
-          </ul>
-        </section>
-      )}
-
-      {phase === "done" && audit && (
-        <>
-          <div className="row no-print" style={{ marginBottom: 14, alignItems: "center" }}>
-            <button className="btn small" onClick={() => { setPhase("start"); setAudit(null); }}>← New letter</button>
-            <span className="pill">{audit.packShort}</span>
-            {audit.runMode === "offline" && <span className="pill offline"><span className="dot" />Offline: keyword checks, no AI</span>}
-            {audit.runMode === "recorded" && (
-              <span className="pill live" title="This demo server has no model key, so it shows a saved live run of this sample.">
-                <span className="dot" />Recorded live run · {audit.recordedAt ? new Date(audit.recordedAt).toLocaleString() : ""}
-              </span>
-            )}
-            <span style={{ flex: 1 }} />
-            <label className="field" style={{ flex: "0 0 auto", minWidth: 0 }}>
-              <select aria-label="Explain it in" value={audit.translation?.lang ?? "en"} onChange={(e) => rerun({ lang: e.target.value })}>
-                {Object.entries(LANGUAGES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-              </select>
-            </label>
-            {!audit.state && audit.mode === "receive" && (
-              <label className="field" style={{ flex: "0 0 auto", minWidth: 0 }}>
-                <select aria-label="Your state" value="" onChange={(e) => rerun({ state: e.target.value })}>
-                  <option value="">Choose your state for local help</option>
-                  {STATES.map((s) => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </label>
-            )}
-            <button className="btn small primary" onClick={() => window.print()}>Evidence packet (PDF)</button>
-          </div>
-
-          {audit.mode === "send" && (
-            <div className="sender-banner no-print" style={{ marginBottom: 14 }}>
-              <b>Sender mode.</b> This is what a family will see. Fix every missing item and aim for a reading level of grade 8 or lower before you send.
-            </div>
-          )}
-
-          <div className="ws">
-            <section className="card ws-left" aria-label="Letter">
-              <div className="letter-head">
-                <span className="t">The letter</span>
-                <span className="legend">
-                  <span><i style={{ background: "var(--mark-date)" }} />dates</span>
-                  <span><i style={{ background: "var(--mark-cite)" }} />citations</span>
-                  <span><i style={{ background: "var(--mark-el)" }} />selected</span>
-                </span>
+                <p className="hero2-sub">
+                  When a school cuts a child&apos;s services or an agency ends Medicaid or food benefits, Holdline checks the letter against the law that governs it.
+                </p>
               </div>
-              <LetterView audit={audit} focus={focus} activeSentences={active} />
-            </section>
-
-            <div className="ws-right">
-              {audit.mode === "receive" && <ClockCard audit={audit} jump={jump} />}
-              <SummaryCard audit={audit} show={show} />
-              <CompletenessCard audit={audit} show={show} />
-              {audit.mode === "send" && <ClockCard audit={audit} jump={jump} />}
-              <CitationsCard audit={audit} jump={jump} />
-              <ReadabilityCard audit={audit} />
-              <ReplyCard audit={audit} />
-              <HelpCard audit={audit} />
-              <GuardCard audit={audit} />
-              <RunLog audit={audit} />
+              <GlowMark size={340} />
+              <ul className="hero2-list">
+                <li><span>01</span>Finds the real deadline</li>
+                <li><span>02</span>Shows what the law requires that is missing</li>
+                <li><span>03</span>Writes a reply you can send tonight</li>
+                <li><span>04</span>Never invents a line</li>
+              </ul>
             </div>
           </div>
-          <Packet audit={audit} />
-        </>
-      )}
+        </section>
 
-      <footer className="foot no-print">
-        <span>Holdline · open source (MIT)</span>
-        <span>Runs on NVIDIA Nemotron via Nebius Token Factory · regulation text from ecfr.gov · search by Tavily</span>
-      </footer>
-    </main>
+        {/* ---------------- Built on (Linear/Vercel logo wall) ---------------- */}
+        <div className="wrap frame" style={{ padding: 0 }}>
+          <div className="strip">
+            <div>NVIDIA Nemotron<small>4 open models</small></div>
+            <div>Nebius<small>Token Factory</small></div>
+            <div>Tavily<small>domain-locked search</small></div>
+            <div>eCFR<small>live federal rules</small></div>
+            <div>Open source<small>MIT licensed</small></div>
+          </div>
+          <div className="strip-cap eyebrow">Built on open infrastructure · your data is never stored</div>
+        </div>
+
+        {/* ---------------- Two-tone statement (Linear) ---------------- */}
+        <section className="sec">
+          <div className="wrap">
+            <Reveal>
+              <p className="two-tone">
+                <b>A letter is not just words.</b> It is a deadline that is already running, a list of rights the law says must be there, and a choice that has to be made before a date. Holdline reads it the way an advocate would — and refuses to invent a single sentence.
+              </p>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ---------------- Product preview (Linear tilt) ---------------- */}
+        <section style={{ paddingBottom: 40 }}>
+          <div className="wrap">
+            <TiltOnScroll>
+              <div className="mock">
+                <div className="mock-bar">
+                  <i /><i /><i />
+                  <span style={{ marginLeft: 8 }}>holdline · Medicaid termination notice</span>
+                  <span className="chip">LIVE · Nemotron 3 Ultra</span>
+                </div>
+                <div className="mock-body">
+                  <div className="mock-letter">
+                    Riverbend County Health Coverage Office
+                    <br />Notice Date: <mark>October 26, 2026</mark>
+                    <br />
+                    <br />Your Medical Assistance (Medicaid) coverage will end on <mark>November 30, 2026</mark>.
+                    <br />
+                    <br /><span className="el">Reason: We did not receive the information needed to complete your renewal.</span>
+                    <br />
+                    <br />If you ask for a hearing <mark>within 10 days of the date of this notice</mark>, your benefits may continue until a decision is made.
+                  </div>
+                  <div className="mock-side">
+                    <div className="mock-clock">
+                      <b>7</b>
+                      <div>
+                        <small>Act by this date to keep your coverage</small>
+                        <span>Thursday, November 5, 2026</span>
+                      </div>
+                    </div>
+                    <div className="mock-row"><span className="dot-ok">✓</span>What will happen, and when<span className="tag-ok">In the letter</span></div>
+                    <div className="mock-row"><span className="dot-part">!</span>The specific reasons<span className="tag-part">Only in part</span></div>
+                    <div className="mock-row"><span className="dot-miss">✕</span>The rule they relied on<span className="tag-miss">Missing</span></div>
+                    <div className="mock-row"><span className="dot-part">!</span>Your right to a hearing<span className="tag-part">Only in part</span></div>
+                    <div className="mock-row"><span className="dot-ok">✓</span>Keeping coverage during an appeal<span className="tag-ok">In the letter</span></div>
+                  </div>
+                </div>
+              </div>
+            </TiltOnScroll>
+          </div>
+        </section>
+
+        {/* ---------------- Bento (Stripe) ---------------- */}
+        <section className="sec">
+          <div className="wrap">
+            <Reveal>
+              <div className="eyebrow brand">What you get</div>
+              <h2 className="h-lg" style={{ margin: "14px 0 44px", maxWidth: 820 }}>
+                Everything a family needs before the date. <span className="muted">In about four seconds.</span>
+              </h2>
+            </Reveal>
+            <div className="bento">
+              <Reveal className="b w4">
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/how-it-works#clock" className="expand" aria-label="Learn about the clock">↗</Link>
+                    <h3>The Clock</h3>
+                    <p>Every date is read from the page by code — never by a model. Relative deadlines become calendar dates, with the math shown.</p>
+                    <div className="b-ui math">
+                      &quot;within 10 days of the date of this notice&quot;
+                      <br />October 26, 2026 + 10 calendar days = <b>Thursday, November 5, 2026</b>
+                      <br />42 CFR 431.230(a): services continue if you ask before the date of action.
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b" delay={80}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/accuracy#citations" className="expand" aria-label="Learn about citation checks">↗</Link>
+                    <h3>Fake-citation catcher</h3>
+                    <p>Every law a letter cites is checked against eCFR.</p>
+                    <div className="b-ui">
+                      <div className="hostrow"><span>34 CFR 300.320</span><span className="tag-ok">real rule</span></div>
+                      <div className="hostrow"><span style={{ textDecoration: "line-through", textDecorationColor: "#ff6b5e" }}>34 CFR 300.326</span><span className="tag-miss">[Reserved]</span></div>
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b" delay={0}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/rules" className="expand" aria-label="See the rules">↗</Link>
+                    <h3>What the law requires</h3>
+                    <p>Each required part, quoted word-for-word from ecfr.gov, marked found, partial, or missing.</p>
+                    <div className="b-ui">
+                      <div className="hostrow"><span>Options considered</span><span className="tag-miss">Missing</span></div>
+                      <div className="hostrow"><span>Tests and records used</span><span className="tag-part">Only in part</span></div>
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b" delay={80}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/how-it-works#reply" className="expand" aria-label="About the reply">↗</Link>
+                    <h3>A reply, tonight</h3>
+                    <p>Fixed wording, exact quotes, and blanks. No AI writes it.</p>
+                    <div className="b-ui q">
+                      I am the parent of <span className="slot">[CHILD&apos;S NAME]</span>. I do not agree with this action. Please provide, in writing: a description of the other options the IEP Team considered…
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b" delay={160}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/check?sample=medicaid-renewal" className="expand" aria-label="Try languages">↗</Link>
+                    <h3>In 11 languages</h3>
+                    <p>Plain-language summary with read-aloud. Numbers can never change in translation.</p>
+                    <div className="b-ui q">Su cobertura de Medicaid termina el 30 de noviembre de 2026.</div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b w3" delay={0}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/get-help" className="expand" aria-label="Get help">↗</Link>
+                    <h3>Real help, in your state</h3>
+                    <p>Tavily searches locked to parent-center, legal-aid, and state .gov sites only.</p>
+                    <div className="b-ui">
+                      <div className="hostrow"><span>Oregon due process hearing request</span><span>oregon.gov</span></div>
+                      <div className="hostrow"><span>Special education guide for parents</span><span>oregonlawhelp.org</span></div>
+                      <div className="hostrow"><span>Find your Parent Center</span><span>parentcenterhub.org</span></div>
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+              <Reveal className="b w3" delay={80}>
+                <Spotlight>
+                  <div className="b-in">
+                    <Link href="/organizations" className="expand" aria-label="For organizations">↗</Link>
+                    <h3>Sender mode</h3>
+                    <p>Schools and agencies check a draft notice before it goes out — missing parts and reading level, fixed before a family ever sees it.</p>
+                    <div className="b-ui">
+                      <div className="hostrow"><span>Reading level</span><span className="tag-part">grade 10.3 → aim for 8</span></div>
+                      <div className="hostrow"><span>Required parts</span><span className="tag-miss">2 missing</span></div>
+                    </div>
+                  </div>
+                </Spotlight>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- Guard demo split (Vercel) ---------------- */}
+        <section className="sec" style={{ borderTop: "1px solid var(--s-line)" }}>
+          <div className="wrap">
+            <Reveal>
+              <h2 className="h-lg" style={{ maxWidth: 820, marginBottom: 48 }}>
+                Watch it catch the AI.
+              </h2>
+            </Reveal>
+            <div className="split">
+              <Reveal>
+                <GuardDemo />
+              </Reveal>
+              <Reveal delay={120}>
+                <p className="stat-big">
+                  <b>0 ungrounded statements</b> reached a family across every letter we tested — because code checks every line Nemotron writes.
+                </p>
+                <div className="eyebrow" style={{ marginBottom: 8 }}>Guards</div>
+                <div className="feat-list">
+                  <Link href="/accuracy#numbers">Numbers and dates must exist in the letter</Link>
+                  <Link href="/accuracy#anchors">Deadlines keep their starting point</Link>
+                  <Link href="/accuracy#tense">Nothing “already ended” unless it did</Link>
+                  <Link href="/accuracy#allowlist">Links only from trusted domains</Link>
+                </div>
+              </Reveal>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- Stats band with ribbon (Stripe) ---------------- */}
+        <section className="band">
+          <Ribbon />
+          <div className="wrap frame" style={{ padding: 0 }}>
+            <div className="stats">
+              <div><b>9/9</b><span>deadlines exact, or correctly “unreadable”</span></div>
+              <div><b>51/51</b><span>required parts judged correctly</span></div>
+              <div><b className="grad-text">0</b><span>ungrounded statements shipped</span></div>
+              <div><b>$0.005</b><span>per letter, about 4 seconds</span></div>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- Numbered steps (Linear) ---------------- */}
+        <section className="sec">
+          <div className="wrap">
+            <Reveal>
+              <div className="eyebrow brand">How it works</div>
+              <h2 className="h-lg" style={{ margin: "14px 0 40px", maxWidth: 760 }}>Models label and judge. Code finds, checks, and computes.</h2>
+            </Reveal>
+            <div className="steps2">
+              {[
+                ["1.0", "Read", "Upload a PDF, paste text, or snap a photo. Nemotron Super VL reads scans word for word."],
+                ["2.0", "Find", "Code finds every date and every citation on the page, with exact positions."],
+                ["3.0", "Judge", "Nemotron 3 Ultra checks the letter against the regulation, pulled live from ecfr.gov by Tavily."],
+                ["4.0", "Guard", "Every finding must point to a real sentence. Anything that doesn't is dropped and counted."],
+              ].map(([n, h, p], i) => (
+                <Reveal key={n} delay={i * 90}>
+                  <div className="num">{n}</div>
+                  <h4>{h}</h4>
+                  <p>{p}</p>
+                </Reveal>
+              ))}
+            </div>
+            <div style={{ marginTop: 28 }}>
+              <Link href="/how-it-works" className="link-arrow">See the full pipeline <span>→</span></Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------- Why (proof) ---------------- */}
+        <section className="sec" style={{ borderTop: "1px solid var(--s-line)" }}>
+          <div className="wrap grid2" style={{ alignItems: "start" }}>
+            <Reveal>
+              <div className="eyebrow brand">Why it matters</div>
+              <h2 className="h-lg" style={{ marginTop: 14 }}>The letters are still confusing. A court said so this year.</h2>
+            </Reveal>
+            <Reveal delay={100}>
+              <div className="lawq" style={{ fontSize: 22 }}>&ldquo;border on the incomprehensible&rdquo;</div>
+              <p className="muted" style={{ marginTop: 10 }}>
+                A federal court on Florida&apos;s Medicaid termination notices, January 2026 —{" "}
+                <a className="link-arrow" style={{ display: "inline" }} href="https://healthlaw.org/resource/chianne-d-et-al-v-jason-weida-middle-district-court-of-florida/" target="_blank" rel="noreferrer">Chianne D. v. Harris ↗</a>
+              </p>
+              <p className="muted">
+                During the Medicaid unwinding, 69% of people disenrolled lost coverage for paperwork reasons, not because they were found ineligible (
+                <a href="https://www.kff.org/medicaid/issue-brief/medicaid-enrollment-and-unwinding-tracker/" target="_blank" rel="noreferrer" style={{ color: "var(--b-green)" }}>KFF</a>).
+              </p>
+              <div style={{ marginTop: 18, display: "flex", gap: 18, flexWrap: "wrap" }}>
+                <Link href="/about" className="link-arrow">Our mission <span>→</span></Link>
+                <Link href="/faq" className="link-arrow">Read the FAQ <span>→</span></Link>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ---------------- CTA ---------------- */}
+        <section className="cta" style={{ borderTop: "1px solid var(--s-line)" }}>
+          <Reveal>
+            <div className="eyebrow brand">Free · private · open source</div>
+            <h2 className="h-lg">Built for the families the letter forgets. Available today.</h2>
+            <p>Not legal advice — the letter&apos;s own words and the law&apos;s own words, side by side.</p>
+            <div className="hero2-cta">
+              <Link href="/check" className="pill brand lg">Check a letter <span className="arr">→</span></Link>
+              <Link href="/get-help" className="pill ghost lg">Find free help</Link>
+            </div>
+          </Reveal>
+        </section>
+      </main>
+      <Footer />
+    </>
   );
 }
