@@ -1,0 +1,162 @@
+import type { RulePack } from "./types";
+import { legalAidDomains, stateGovDomains } from "./idea-pwn";
+
+const S1313 = "7-273.13";
+const S1315 = "7-273.15";
+
+export const snapAdverse: RulePack = {
+  id: "snap-adverse",
+  name: "SNAP (food assistance) notice",
+  short: "SNAP notice of adverse action",
+  senderNoun: "agency",
+  keepNoun: "benefits",
+  plainLanguage: { cite: "7 CFR 273.13(a)(2)", sourceId: S1313, sourceQuote: "explains in easily understandable language" },
+  recipientNoun: "household",
+  detect: [/\bSNAP\b/, /food (stamps|assistance|benefits)/i, /\bEBT\b/, /allotment/i],
+  allowlist: ["ecfr.gov", "fns.usda.gov", "usda.gov", "lawhelp.org", "lsc.gov"],
+  sources: [
+    {
+      id: S1313,
+      cite: "7 CFR 273.13",
+      title: "Notice of adverse action",
+      url: "https://www.ecfr.gov/current/title-7/section-273.13",
+      ecfr: { title: 7, part: "273", section: "273.13" },
+    },
+    {
+      id: S1315,
+      cite: "7 CFR 273.15",
+      title: "Fair hearings",
+      url: "https://www.ecfr.gov/current/title-7/section-273.15",
+      ecfr: { title: 7, part: "273", section: "273.15" },
+    },
+  ],
+  elements: [
+    {
+      id: "action",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote: "The proposed action",
+      label: "What will happen",
+      plain: "What the agency is going to do to your benefits.",
+      ask: "a description of the proposed action",
+      keywords: [/(will|is going to) (be )?(end|stop|terminat|reduc|chang|decreas|cancel|clos)/i, /new (amount|allotment)/i],
+    },
+    {
+      id: "reason",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote: "the reason for the proposed action",
+      label: "The reason",
+      plain: "Why your benefits are changing.",
+      ask: "the reason for the proposed action",
+      keywords: [/because/i, /\breason/i, /due to/i, /income/i],
+    },
+    {
+      id: "hearing",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote: "the household's right to request a fair hearing",
+      label: "Your right to a fair hearing",
+      plain: "That your household can ask for a fair hearing.",
+      ask: "an explanation of my household's right to request a fair hearing",
+      keywords: [/fair hearing/i, /\bhearing\b/i, /\bappeal/i],
+    },
+    {
+      id: "phone",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote: "the telephone number of the SNAP office",
+      label: "SNAP office phone number",
+      plain: "A phone number for the SNAP office (toll-free or one that accepts collect calls), and if possible a contact name.",
+      ask: "the telephone number of the SNAP office and, if possible, the name of a person to contact",
+      keywords: [/\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/, /1-8\d\d/],
+    },
+    {
+      id: "continued",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote: "the availability of continued benefits",
+      label: "Keeping benefits during the hearing",
+      plain: "That you can keep getting benefits while you wait for the hearing.",
+      ask: "an explanation of the availability of continued benefits",
+      keywords: [/continu/i, /keep (getting|receiving)/i],
+    },
+    {
+      id: "liability",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote:
+        "the liability of the household for any overissuances received while awaiting a fair hearing if the hearing official's decision is adverse to the household",
+      label: "Repayment risk",
+      plain: "That if you keep benefits and then lose the hearing, you may have to pay back the extra amount.",
+      ask: "an explanation of my household's liability for overissuances received while awaiting a fair hearing",
+      keywords: [/pay (it )?back/i, /repay/i, /overissuance/i, /overpayment/i],
+    },
+    {
+      id: "legal",
+      cite: "7 CFR 273.13(a)(2)",
+      sourceId: S1313,
+      sourceQuote:
+        "If there is an individual or organization available that provides free legal representation, the notice shall also advise the household of the availability of the service",
+      label: "Free legal help",
+      plain: "Where to get free legal representation, if it is available in your area.",
+      ask: "information about available free legal representation",
+      keywords: [/legal (aid|services|help|representation)/i, /free lawyer/i],
+      optional: true,
+    },
+  ],
+  clock: [
+    {
+      id: "continue",
+      role: "keep_by",
+      cite: "7 CFR 273.15(k)(1)",
+      sourceId: S1315,
+      sourceQuote:
+        "If a household requests a fair hearing within the period provided by the notice of adverse action, as set forth in § 273.13, and its certification period has not expired, the household's participation in the program shall be continued",
+      meaning:
+        "If you request a fair hearing within the period given in the notice, your benefits continue at the old level while you wait, as long as your certification period has not ended.",
+      action: "By this date, request a fair hearing. Say you want your benefits to continue.",
+    },
+    {
+      id: "continue-effective",
+      role: "effective",
+      cite: "7 CFR 273.13(a)(1)",
+      sourceId: S1313,
+      sourceQuote: "the period includes at least 10 days from the date the notice is mailed to the date upon which the action becomes effective",
+      meaning: "The notice period must be at least 10 days from mailing to the date the change takes effect.",
+      action: "If no separate deadline is given, request a hearing before this date to keep your benefits.",
+    },
+  ],
+  hearingWindowDays: {
+    days: 90,
+    cite: "7 CFR 273.15(g)",
+    sourceId: S1315,
+    sourceQuote: "A household shall be allowed to request a hearing on any action by the State agency or loss of benefits which occurred in the prior 90 days.",
+    label: "Last day to request a hearing (90-day window)",
+  },
+  reply: {
+    subject: "Request for fair hearing and continued benefits — Case [CASE NUMBER]",
+    opening: "My name is [YOUR NAME]. My household received the notice dated [NOTICE DATE] about our SNAP benefits.",
+    disagree: "We disagree with this action and we are requesting a fair hearing.",
+    keepIt: "We request that our benefits continue at the current level while the hearing is pending, as provided in 7 CFR 273.15(k)(1).",
+    closing: "Please confirm receipt of this request in writing. You can reach me at [YOUR PHONE OR EMAIL].",
+    slots: ["[YOUR NAME]", "[CASE NUMBER]", "[NOTICE DATE]", "[YOUR PHONE OR EMAIL]", "[DATE]"],
+  },
+  help: [
+    {
+      id: "legal",
+      label: "Free legal help",
+      query: (s) => `${s} free legal aid SNAP food stamps fair hearing`,
+      domains: (s) => legalAidDomains(s),
+      mustMentionState: true,
+      fixed: [{ title: "Find free legal aid near you (Legal Services Corporation)", url: "https://www.lsc.gov/about-lsc/what-legal-aid/get-legal-help" }],
+    },
+    {
+      id: "state",
+      label: "State SNAP fair hearing page",
+      query: (s) => `${s} SNAP fair hearing request`,
+      domains: (s) => stateGovDomains(s),
+      allowPdf: true,
+    },
+  ],
+};
