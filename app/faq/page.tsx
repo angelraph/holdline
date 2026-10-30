@@ -10,10 +10,10 @@ const SECTIONS: { id: string; title: string; items: QA[] }[] = [
     id: "basics",
     title: "The basics",
     items: [
-      { q: "What does Holdline do?", a: <>It checks a letter that cuts or ends a service — a school special-education notice, a Medicaid notice, or a SNAP notice — against the federal rule for what that letter must contain. You get the real deadline to keep what you have, the required parts that are missing, which cited laws are real, and a reply you can send.</> },
+      { q: "What does Holdline do?", a: <>It checks a letter that cuts or ends a service (a school special-education notice, a Medicaid notice, or a SNAP notice) against the federal rule for what that letter must contain. You get the real deadline to keep what you have, the required parts that are missing, which cited laws are real, and a reply you can send.</> },
       { q: "Is it free?", a: <>Yes. Holdline is free and open source under the MIT license.</> },
       { q: "Which letters does it check?", a: <>Today: school prior written notices under IDEA (34 CFR 300.503), Medicaid termination or reduction notices (42 CFR 431.210), and SNAP notices of adverse action (7 CFR 273.13). See <Link href="/rules">the rules we check</Link>. Other letters can still be read, but the completeness check is built for these three.</> },
-      { q: "Is this legal advice?", a: <>No. Holdline shows what your letter says and what the regulation says, word for word, and does the date math. It doesn&apos;t predict outcomes or file anything. A Parent Center, legal aid office, or advocate can help you decide what to do — see <Link href="/get-help">free help</Link>.</> },
+      { q: "Is this legal advice?", a: <>No. Holdline shows what your letter says and what the regulation says, word for word, and does the date math. It doesn&apos;t predict outcomes or file anything. A Parent Center, legal aid office, or advocate can help you decide what to do. See <Link href="/get-help">free help</Link>.</> },
     ],
   },
   {
@@ -22,7 +22,7 @@ const SECTIONS: { id: string; title: string; items: QA[] }[] = [
     items: [
       { q: "How does it find my deadline?", a: <>Code reads every date printed on the letter. Phrases like “within 10 days of the date of this notice” are turned into a calendar date, and every step of the math is shown. The AI can label what a date means but can never create one. <Link href="/how-it-works#clock">More</Link>.</> },
       { q: "What if my letter has no date?", a: <>The clock says “Date unreadable” and tells you what to ask the sender for. Holdline never guesses a deadline.</> },
-      { q: "Why is the date one day earlier than in my letter?", a: <>If the letter says to act <em>before</em> a date, the last safe day is the day before. When a deadline counts business or school days, Holdline shows the earliest it could be — the safe date to use.</> },
+      { q: "Why is the date one day earlier than in my letter?", a: <>If the letter says to act <em>before</em> a date, the last safe day is the day before. When a deadline counts business or school days, Holdline shows the earliest it could be, which is the safe date to use.</> },
       { q: "What does “keep your services” mean?", a: <>For school notices, the law keeps a child in their current placement while a due process complaint is pending (34 CFR 300.518). For Medicaid and SNAP, benefits generally continue if you request a hearing in time (42 CFR 431.230, 7 CFR 273.15). Holdline quotes the rule and shows the date that matters.</> },
     ],
   },
@@ -51,7 +51,7 @@ const SECTIONS: { id: string; title: string; items: QA[] }[] = [
     items: [
       { q: "Can I use a photo of my letter?", a: <>Yes. Upload a phone photo and Nemotron Super VL transcribes it word for word. PDFs work too.</> },
       { q: "Does it work in other languages?", a: <>The summary and key actions can be shown in 11 languages, with read-aloud. Quotes stay in the original language so the evidence never changes.</> },
-      { q: "I work at a school or agency. Can I use it?", a: <>Yes — <Link href="/organizations">sender mode</Link> checks a draft notice before it goes out.</> },
+      { q: "I work at a school or agency. Can I use it?", a: <>Yes. <Link href="/organizations">sender mode</Link> checks a draft notice before it goes out.</> },
     ],
   },
 ];

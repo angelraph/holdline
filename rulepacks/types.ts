@@ -2,7 +2,7 @@
 // "the law says" comes from `sourceQuote`, which must be an exact substring of the
 // regulation text (checked against live eCFR by `npm run verify-rulepacks`).
 // Everything a user reads as "what this means" comes from `plain`/`meaning`, which is
-// fixed, human-written text — never model output.
+// fixed, human-written text. Never model output.
 
 export type RegSource = {
   id: string; // e.g. "34-300.503"

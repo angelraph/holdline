@@ -19,7 +19,7 @@ export default function Privacy() {
           <h2>What happens when you check a letter</h2>
           <ul>
             <li><strong>Reading:</strong> the letter text (or photo) is sent to NVIDIA Nemotron models on Nebius Token Factory to be read and checked, then the result is returned to your browser.</li>
-            <li><strong>Search:</strong> short queries — such as your state and the type of notice, never the letter itself — are sent to Tavily to find regulation text and local help.</li>
+            <li><strong>Search:</strong> short queries (such as your state and the type of notice, never the letter itself) are sent to Tavily to find regulation text and local help.</li>
             <li><strong>Regulations:</strong> regulation text is fetched from the official eCFR.</li>
           </ul>
           <h2>Hiding names</h2>

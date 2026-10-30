@@ -1,4 +1,4 @@
-// npm run eval — runs every labelled case through the real pipeline and scores it.
+// npm run eval: runs every labelled case through the real pipeline and scores it.
 // The invariants (0 ungrounded statements shipped, 0 off-allowlist URLs) are re-checked
 // here independently of the pipeline's own guards.
 import "dotenv/config";
@@ -72,7 +72,7 @@ async function main() {
 
   const pct = (a: number, b: number) => (b ? `${((a / b) * 100).toFixed(0)}%` : "n/a");
   const out = [
-    `# Holdline eval — ${mode} mode, ${CASES.length} letters, today = ${TODAY}`,
+    `# Holdline eval: ${mode} mode, ${CASES.length} letters, today = ${TODAY}`,
     "",
     "| Letter | Notice type | Deadline | Required elements |",
     "|---|---|---|---|",

@@ -44,7 +44,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 input, select, textarea { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--hold); outline-offset: 2px; border-radius: 6px; }
 
-/* ---------- shell ---------- */
+/* shell */
 .shell { max-width: 1320px; margin: 0 auto; padding: 8px 20px 72px; }
 .app-title { display: flex; align-items: center; gap: 10px; }
 .topbar {
@@ -70,7 +70,7 @@ input, select, textarea { font: inherit; color: inherit; }
   background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin-bottom: 18px;
 }
 
-/* ---------- start screen ---------- */
+/* start screen */
 .hero { padding: 28px 0 8px; max-width: 760px; }
 .hero h1 { font-family: var(--serif); font-size: clamp(30px, 4.4vw, 46px); line-height: 1.08; letter-spacing: -0.02em; margin: 0 0 14px; font-weight: 600; }
 .hero p { font-size: 17px; color: var(--ink-2); margin: 0; max-width: 640px; }
@@ -120,7 +120,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .proof { margin-top: 26px; font-size: 14px; color: var(--ink-2); max-width: 900px; }
 .proof blockquote { margin: 8px 0 0; padding: 10px 14px; border-left: 3px solid var(--red); background: var(--panel); border-radius: 0 10px 10px 0; font-family: var(--serif); font-size: 16px; color: var(--ink); }
 
-/* ---------- progress ---------- */
+/* progress */
 .progress { max-width: 720px; margin: 40px auto; }
 .progress h2 { font-family: var(--serif); font-weight: 600; font-size: 26px; margin: 0 0 6px; }
 .progress .sub { color: var(--ink-2); margin-bottom: 18px; }
@@ -136,7 +136,7 @@ input, select, textarea { font: inherit; color: inherit; }
 .steps .meta { color: var(--ink-3); font-size: 12.5px; font-family: var(--mono); white-space: nowrap; }
 .steps .det { color: var(--ink-2); font-size: 12.5px; }
 
-/* ---------- workspace ---------- */
+/* workspace */
 .ws { display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr); gap: 20px; align-items: start; }
 .ws-left { position: sticky; top: 12px; max-height: calc(100vh - 24px); display: flex; flex-direction: column; }
 .ws-right { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
@@ -270,7 +270,7 @@ input, select, textarea { font: inherit; color: inherit; }
   .el-body { padding-left: 14px; }
 }
 
-/* ---------- Evidence Packet (print) ---------- */
+/* Evidence Packet (print) */
 @media print {
   body { background: #fff; color: #000; font-size: 11pt; }
   .no-print, .shell > *:not(.packet) { display: none !important; }

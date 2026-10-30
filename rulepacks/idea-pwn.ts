@@ -72,7 +72,7 @@ export const ideaPwn: RulePack = {
       sourceQuote:
         "A description of each evaluation procedure, assessment, record, or report the agency used as a basis for the proposed or refused action",
       label: "Tests and records used",
-      plain: "Each test, assessment, record, or report the decision was based on — named one by one.",
+      plain: "Each test, assessment, record, or report the decision was based on, named one by one.",
       ask: "a description of each evaluation procedure, assessment, record, or report used as a basis for this action",
       keywords: [/evaluat/i, /assessment/i, /progress report/i, /\brecords?\b/i, /data/i, /\btest(ing|s)?\b/i, /observation/i],
     },
@@ -133,7 +133,7 @@ export const ideaPwn: RulePack = {
   ],
   hearingWindowDays: undefined,
   reply: {
-    subject: "Response to Prior Written Notice dated [NOTICE DATE] — [CHILD'S NAME]",
+    subject: "Response to Prior Written Notice dated [NOTICE DATE], [CHILD'S NAME]",
     opening:
       "I am the parent of [CHILD'S NAME]. I received the district's notice and I am writing about the proposed action described in it.",
     disagree: "I do not agree with this action.",

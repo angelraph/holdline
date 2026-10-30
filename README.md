@@ -11,9 +11,9 @@ Built for the **Nebius x NVIDIA Global AI Hackathon** · Track: **Best Apps and 
 
 ## The problem
 
-Families get official letters that take something away: a school cutting a child's special-education services, or a state ending Medicaid or food benefits. Federal rules spell out what those letters **must contain**, and families can usually **keep the service while they appeal** — if they act before a date that is often not written as a date at all ("within 10 days of the date of this notice").
+Families get official letters that take something away: a school cutting a child's special-education services, or a state ending Medicaid or food benefits. Federal rules spell out what those letters **must contain**, and families can usually **keep the service while they appeal**, if they act before a date that is often not written as a date at all ("within 10 days of the date of this notice").
 
-- In January 2026 a federal court found that Florida's Medicaid termination notices "border on the incomprehensible" and violated due process. *Chianne D. v. Harris* (M.D. Fla.) — [NHeLP case page](https://healthlaw.org/resource/chianne-d-et-al-v-jason-weida-middle-district-court-of-florida/)
+- In January 2026 a federal court found that Florida's Medicaid termination notices "border on the incomprehensible" and violated due process. *Chianne D. v. Harris* (M.D. Fla.), [NHeLP case page](https://healthlaw.org/resource/chianne-d-et-al-v-jason-weida-middle-district-court-of-florida/)
 - During the Medicaid unwinding, 69% of people disenrolled lost coverage for paperwork or procedural reasons, not because they were found ineligible. [KFF](https://www.kff.org/medicaid/issue-brief/medicaid-enrollment-and-unwinding-tracker/)
 - Schools now draft IEPs with AI ([EdWeek](https://www.edweek.org/teaching-learning/teachers-are-using-ai-to-help-write-ieps-advocates-have-concerns/2025/10)), and parent guides warn families that chatbots can be wrong.
 
@@ -24,10 +24,10 @@ A chatbot that "explains your letter" makes this worse: fluent text, invented la
 | | |
 |---|---|
 | **The Clock** | Finds every date printed on the page (by code, never by a model), turns "within 10 days of the date of this notice" into a calendar date with the math shown, and attaches the federal rule that protects you if you act in time. No date on the page → "Date unreadable", never a guess. One click adds it to your calendar with reminders. |
-| **The Completeness Check** | Lists every element the regulation says the notice must contain — quoted word-for-word from ecfr.gov — and marks each one *in the letter* (with the sentence), *only in part*, or *missing*. |
+| **The Completeness Check** | Lists every element the regulation says the notice must contain, quoted word-for-word from ecfr.gov, and marks each one *in the letter* (with the sentence), *only in part*, or *missing*. |
 | **Citation check** | Every law the letter cites is checked. A citation to a section that doesn't exist, or to a `[Reserved]` empty section, is struck through. |
 | **The Reply** | A letter requesting the missing information and asking to keep current services during the dispute. Fixed wording + exact quotes + blanks. No model writes it. |
-| **Find help** | Tavily searches — locked to parent-center, legal-aid, and state `.gov` domains — find the family's Parent Training and Information Center, free legal aid, and the official hearing page. |
+| **Find help** | Tavily searches, locked to parent-center, legal-aid, and state `.gov` domains, find the family's Parent Training and Information Center, free legal aid, and the official hearing page. |
 | **In my language** | Plain-language summary in 11 languages with read-aloud. Quotes stay in the original. Translations that change any number are dropped. |
 | **Readability** | Flesch–Kincaid grade of the letter, against the rule's own plain-language requirement. |
 | **Evidence Packet** | One-click printable PDF of the whole audit to hand to an advocate. |
@@ -59,7 +59,7 @@ Model IDs are discovered from `GET /v1/models` on Token Factory (override with `
 `npm run eval` runs labelled fictional letters (3 samples + 6 more: complete notices, a letter with no deadline, a letter with no date at all, business-day counting, an explicit keep-by date) through the real pipeline and independently re-checks the guarantees.
 
 <!-- EVAL:START -->
-**Live mode** — NVIDIA Nemotron on Nebius Token Factory + Tavily, 9 letters:
+**Live mode**: NVIDIA Nemotron on Nebius Token Factory + Tavily, 9 letters:
 
 | Metric | Result |
 |---|---|

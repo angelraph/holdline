@@ -10,7 +10,7 @@ export default function Landing() {
     <>
       <Nav />
       <main>
-        {/* ---------------- Hero (Vercel pattern) ---------------- */}
+        {/* Hero */}
         <section className="hero2">
           <div className="wrap frame">
             <div className="hero2-grid">
@@ -40,7 +40,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Built on (Linear/Vercel logo wall) ---------------- */}
+        {/* Built on */}
         <div className="wrap frame" style={{ padding: 0 }}>
           <div className="strip">
             <div>NVIDIA Nemotron<small>4 open models</small></div>
@@ -52,18 +52,18 @@ export default function Landing() {
           <div className="strip-cap eyebrow">Built on open infrastructure · your data is never stored</div>
         </div>
 
-        {/* ---------------- Two-tone statement (Linear) ---------------- */}
+        {/* Two-tone statement */}
         <section className="sec">
           <div className="wrap">
             <Reveal>
               <p className="two-tone">
-                <b>A letter is not just words.</b> It is a deadline that is already running, a list of rights the law says must be there, and a choice that has to be made before a date. Holdline reads it the way an advocate would — and refuses to invent a single sentence.
+                <b>A letter is not just words.</b> It is a deadline that is already running, a list of rights the law says must be there, and a choice that has to be made before a date. Holdline reads it the way an advocate would, and refuses to invent a single sentence.
               </p>
             </Reveal>
           </div>
         </section>
 
-        {/* ---------------- Product preview (Linear tilt) ---------------- */}
+        {/* Product preview */}
         <section style={{ paddingBottom: 40 }}>
           <div className="wrap">
             <TiltOnScroll>
@@ -104,7 +104,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Bento (Stripe) ---------------- */}
+        {/* Bento */}
         <section className="sec">
           <div className="wrap">
             <Reveal>
@@ -119,7 +119,7 @@ export default function Landing() {
                   <div className="b-in">
                     <Link href="/how-it-works#clock" className="expand" aria-label="Learn about the clock">↗</Link>
                     <h3>The Clock</h3>
-                    <p>Every date is read from the page by code — never by a model. Relative deadlines become calendar dates, with the math shown.</p>
+                    <p>Every date is read from the page by code, never by a model. Relative deadlines become calendar dates, with the math shown.</p>
                     <div className="b-ui math">
                       &quot;within 10 days of the date of this notice&quot;
                       <br />October 26, 2026 + 10 calendar days = <b>Thursday, November 5, 2026</b>
@@ -195,7 +195,7 @@ export default function Landing() {
                   <div className="b-in">
                     <Link href="/organizations" className="expand" aria-label="For organizations">↗</Link>
                     <h3>Sender mode</h3>
-                    <p>Schools and agencies check a draft notice before it goes out — missing parts and reading level, fixed before a family ever sees it.</p>
+                    <p>Schools and agencies check a draft notice before it goes out. Missing parts and reading level get fixed before a family ever sees it.</p>
                     <div className="b-ui">
                       <div className="hostrow"><span>Reading level</span><span className="tag-part">grade 10.3 → aim for 8</span></div>
                       <div className="hostrow"><span>Required parts</span><span className="tag-miss">2 missing</span></div>
@@ -207,7 +207,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Guard demo split (Vercel) ---------------- */}
+        {/* Guard demo split */}
         <section className="sec" style={{ borderTop: "1px solid var(--s-line)" }}>
           <div className="wrap">
             <Reveal>
@@ -221,7 +221,7 @@ export default function Landing() {
               </Reveal>
               <Reveal delay={120}>
                 <p className="stat-big">
-                  <b>0 ungrounded statements</b> reached a family across every letter we tested — because code checks every line Nemotron writes.
+                  <b>0 ungrounded statements</b> reached a family across every letter we tested, because code checks every line Nemotron writes.
                 </p>
                 <div className="eyebrow" style={{ marginBottom: 8 }}>Guards</div>
                 <div className="feat-list">
@@ -235,7 +235,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Stats band with ribbon (Stripe) ---------------- */}
+        {/* Stats band with ribbon */}
         <section className="band">
           <Ribbon />
           <div className="wrap frame" style={{ padding: 0 }}>
@@ -248,7 +248,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Numbered steps (Linear) ---------------- */}
+        {/* Numbered steps */}
         <section className="sec">
           <div className="wrap">
             <Reveal>
@@ -275,7 +275,7 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- Why (proof) ---------------- */}
+        {/* Why (proof) */}
         <section className="sec" style={{ borderTop: "1px solid var(--s-line)" }}>
           <div className="wrap grid2" style={{ alignItems: "start" }}>
             <Reveal>
@@ -285,7 +285,7 @@ export default function Landing() {
             <Reveal delay={100}>
               <div className="lawq" style={{ fontSize: 22 }}>&ldquo;border on the incomprehensible&rdquo;</div>
               <p className="muted" style={{ marginTop: 10 }}>
-                A federal court on Florida&apos;s Medicaid termination notices, January 2026 —{" "}
+                A federal court on Florida&apos;s Medicaid termination notices, January 2026:{" "}
                 <a className="link-arrow" style={{ display: "inline" }} href="https://healthlaw.org/resource/chianne-d-et-al-v-jason-weida-middle-district-court-of-florida/" target="_blank" rel="noreferrer">Chianne D. v. Harris ↗</a>
               </p>
               <p className="muted">
@@ -300,12 +300,12 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------------- CTA ---------------- */}
+        {/* CTA */}
         <section className="cta" style={{ borderTop: "1px solid var(--s-line)" }}>
           <Reveal>
             <div className="eyebrow brand">Free · private · open source</div>
             <h2 className="h-lg">Built for the families the letter forgets. Available today.</h2>
-            <p>Not legal advice — the letter&apos;s own words and the law&apos;s own words, side by side.</p>
+            <p>Not legal advice. Just the letter&apos;s own words and the law&apos;s own words, side by side.</p>
             <div className="hero2-cta">
               <Link href="/check" className="pill brand lg">Check a letter <span className="arr">→</span></Link>
               <Link href="/get-help" className="pill ghost lg">Find free help</Link>

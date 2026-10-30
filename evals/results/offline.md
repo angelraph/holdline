@@ -1,4 +1,4 @@
-# Holdline eval — offline mode, 9 letters, today = 2026-10-28
+# Holdline eval: offline mode, 9 letters, today = 2026-10-28
 
 | Letter | Notice type | Deadline | Required elements |
 |---|---|---|---|

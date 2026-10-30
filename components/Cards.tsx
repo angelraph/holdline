@@ -9,7 +9,7 @@ type ShowSentences = (ids: number[]) => void;
 
 const dayWord = (n: number) => (Math.abs(n) === 1 ? "day" : "days");
 
-/* ------------------------------ The Clock ------------------------------ */
+/* The Clock */
 export function ClockCard({ audit, jump }: { audit: Audit; jump: Jump }) {
   const { primary, items, unreadable, unreadableReason } = audit.clock;
   const [open, setOpen] = useState(false);
@@ -33,7 +33,7 @@ export function ClockCard({ audit, jump }: { audit: Audit; jump: Jump }) {
   const past = primary.daysLeft < 0;
   const calm = primary.daysLeft > 30;
   const sender = audit.mode === "send";
-  const icsTitle = `${primary.label} — ${audit.packShort}`;
+  const icsTitle = `${primary.label}: ${audit.packShort}`;
 
   return (
     <section className={`card clock ${calm ? "calm" : ""}`} aria-label="Deadline">
@@ -51,7 +51,7 @@ export function ClockCard({ audit, jump }: { audit: Audit; jump: Jump }) {
               {tr?.clockAction && <span className="tr">{tr.clockAction}</span>}
             </div>
           )}
-          {primary.conservative && <div className="src" style={{ marginTop: 6 }}>Earliest possible date — the safe one to use.</div>}
+          {primary.conservative && <div className="src" style={{ marginTop: 6 }}>Earliest possible date, so it is the safe one to use.</div>}
           <div className="actions no-print">
             {primary.span && <button className="btn small" onClick={() => jump(primary.span!.start, primary.span!.end)}>Show in letter</button>}
             {!sender && (
@@ -103,7 +103,7 @@ export function ClockCard({ audit, jump }: { audit: Audit; jump: Jump }) {
   );
 }
 
-/* ------------------------------ Summary ------------------------------ */
+/* Summary */
 export function SummaryCard({ audit, show }: { audit: Audit; show: ShowSentences }) {
   const lang = audit.translation?.lang ?? "en";
   const [speaking, setSpeaking] = useState(false);
@@ -136,7 +136,7 @@ export function SummaryCard({ audit, show }: { audit: Audit; show: ShowSentences
   );
 }
 
-/* --------------------------- Completeness check --------------------------- */
+/* Completeness check */
 const MARK = { found: "✓", partial: "!", missing: "✕" } as const;
 const WORD = { found: "In the letter", partial: "Only in part", missing: "Missing" } as const;
 
@@ -206,7 +206,7 @@ export function CompletenessCard({ audit, show }: { audit: Audit; show: ShowSent
   );
 }
 
-/* ------------------------------ Readability ------------------------------ */
+/* Readability */
 export function ReadabilityCard({ audit }: { audit: Audit }) {
   const g = audit.readability.grade;
   const pct = Math.min(100, (g / 18) * 100);
@@ -233,7 +233,7 @@ export function ReadabilityCard({ audit }: { audit: Audit }) {
   );
 }
 
-/* ------------------------------ Citations ------------------------------ */
+/* Citations */
 export function CitationsCard({ audit, jump }: { audit: Audit; jump: Jump }) {
   if (!audit.citations.length) return null;
   return (
@@ -263,7 +263,7 @@ export function CitationsCard({ audit, jump }: { audit: Audit; jump: Jump }) {
   );
 }
 
-/* ------------------------------ Help ------------------------------ */
+/* Help */
 export function HelpCard({ audit }: { audit: Audit }) {
   if (audit.mode === "send") return null;
   const any = audit.help.some((g) => g.results.length);
@@ -299,7 +299,7 @@ export function HelpCard({ audit }: { audit: Audit }) {
   );
 }
 
-/* ------------------------------ Reply ------------------------------ */
+/* Reply */
 export function ReplyCard({ audit }: { audit: Audit }) {
   const [copied, setCopied] = useState(false);
   if (audit.mode === "send" || !audit.reply) return null;
@@ -334,7 +334,7 @@ export function ReplyCard({ audit }: { audit: Audit }) {
   );
 }
 
-/* ------------------------------ Guard stats ------------------------------ */
+/* Guard stats */
 export function GuardCard({ audit }: { audit: Audit }) {
   const v = audit.verifier;
   const blocked = v.modelLabelsRejected + v.elementClaimsRejected + v.summaryDropped + v.translationDropped;
@@ -350,7 +350,7 @@ export function GuardCard({ audit }: { audit: Audit }) {
   );
 }
 
-/* ------------------------------ Run log ------------------------------ */
+/* Run log */
 export function RunLog({ audit }: { audit: Audit }) {
   const cost = audit.steps.reduce((n, s) => n + (s.costUsd ?? 0), 0);
   const ms = audit.steps.reduce((n, s) => n + s.ms, 0);
@@ -374,8 +374,8 @@ export function RunLog({ audit }: { audit: Audit }) {
                   <div className="why">{s.why}</div>
                 </td>
                 <td>{s.model ? <span className="model">{s.model}</span> : <span className="why">{s.kind === "search" ? "Tavily / eCFR" : "code"}</span>}{s.status !== "ok" && <div className="status-txt partial">{s.status}</div>}</td>
-                <td className="num">{s.ms ? `${(s.ms / 1000).toFixed(2)}s` : "—"}</td>
-                <td className="num">{s.tokensIn ? `${s.tokensIn}→${s.tokensOut}` : "—"}{s.costUsd ? <div>${s.costUsd.toFixed(5)}</div> : null}</td>
+                <td className="num">{s.ms ? `${(s.ms / 1000).toFixed(2)}s` : "-"}</td>
+                <td className="num">{s.tokensIn ? `${s.tokensIn}→${s.tokensOut}` : "-"}{s.costUsd ? <div>${s.costUsd.toFixed(5)}</div> : null}</td>
                 <td>
                   <div className="why">{s.detail}</div>
                   {s.urls?.length ? <div className="urls">{s.urls.map((u) => <a key={u} href={u} target="_blank" rel="noreferrer">{u}</a>)}</div> : null}
@@ -391,7 +391,7 @@ export function RunLog({ audit }: { audit: Audit }) {
   );
 }
 
-/* ------------------------------ Evidence Packet (print only) ------------------------------ */
+/* Evidence Packet (print only) */
 export function Packet({ audit }: { audit: Audit }) {
   const p = audit.clock.primary;
   return (
@@ -403,7 +403,7 @@ export function Packet({ audit }: { audit: Audit }) {
           <h2>Deadline</h2>
           <p><b>{p.label}: {formatLong(p.iso)}</b> ({p.daysLeft} days from {formatLong(audit.today)})</p>
           {p.steps && <ol>{p.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>}
-          {p.rule && <p className="q">{p.rule.cite}: “{p.rule.quote}” — {p.rule.url}</p>}
+          {p.rule && <p className="q">{p.rule.cite}: “{p.rule.quote}” ({p.rule.url})</p>}
         </section>
       )}
       <section>
@@ -415,7 +415,7 @@ export function Packet({ audit }: { audit: Audit }) {
               <tr key={e.id}>
                 <td><b>{e.label}</b><div className="small">{e.cite}: “{e.sourceQuote}”</div></td>
                 <td>{WORD[e.status]}</td>
-                <td className="q">{e.sentenceIds.map((id) => `“${audit.sentences[id]?.text}”`).join(" ") || "—"}</td>
+                <td className="q">{e.sentenceIds.map((id) => `“${audit.sentences[id]?.text}”`).join(" ") || "-"}</td>
               </tr>
             ))}
           </tbody>
@@ -424,7 +424,7 @@ export function Packet({ audit }: { audit: Audit }) {
       {audit.citations.length > 0 && (
         <section>
           <h2>Citations in the letter</h2>
-          <ul>{audit.citations.map((c, i) => <li key={i}>{c.text}: {c.status === "verified" ? "verified" : c.status === "not_found" ? "does not support this letter" : "not checked"} {c.note ? `— ${c.note}` : ""}</li>)}</ul>
+          <ul>{audit.citations.map((c, i) => <li key={i}>{c.text}: {c.status === "verified" ? "verified" : c.status === "not_found" ? "does not support this letter" : "not checked"} {c.note ? `(${c.note})` : ""}</li>)}</ul>
         </section>
       )}
       <section>
@@ -434,7 +434,7 @@ export function Packet({ audit }: { audit: Audit }) {
       {audit.help.some((g) => g.results.length) && (
         <section>
           <h2>Where to get help</h2>
-          {audit.help.map((g) => g.results.length ? <div key={g.id}><b>{g.label}</b><ul>{g.results.map((r) => <li key={r.url}>{r.title} — {r.url}</li>)}</ul></div> : null)}
+          {audit.help.map((g) => g.results.length ? <div key={g.id}><b>{g.label}</b><ul>{g.results.map((r) => <li key={r.url}>{r.title}: {r.url}</li>)}</ul></div> : null)}
         </section>
       )}
       {audit.reply && (

@@ -30,7 +30,7 @@ export function buildReply(opts: {
   const partial = elements.filter((e) => e.status === "partial");
   if (missing.length || partial.length) {
     lines.push("", "The notice does not fully include information that federal rules require it to contain. Please provide, in writing:");
-    for (const e of [...missing, ...partial]) lines.push(`  • ${e.ask} (${e.cite})${e.status === "partial" ? " — the notice addresses this only in part" : ""}`);
+    for (const e of [...missing, ...partial]) lines.push(`  • ${e.ask} (${e.cite})${e.status === "partial" ? ". The notice addresses this only in part." : ""}`);
   }
 
   lines.push("", pack.reply.closing, "", "Sincerely,", "[YOUR NAME]");

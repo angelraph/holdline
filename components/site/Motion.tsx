@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 
-/** Fade-and-rise on scroll, like Linear's section reveals. */
+/** Fade-and-rise on scroll. */
 export function Reveal({ children, delay = 0, as: Tag = "div", className = "" }: { children: React.ReactNode; delay?: number; as?: "div" | "section" | "li"; className?: string }) {
   const ref = useRef<HTMLElement>(null);
   const [on, setOn] = useState(false);
@@ -20,7 +20,7 @@ export function Reveal({ children, delay = 0, as: Tag = "div", className = "" }:
   );
 }
 
-/** Live ticking countdown, like Stripe's live counter. */
+/** Live ticking countdown. */
 export function Countdown({ to, label }: { to: string; label: string }) {
   const [now, setNow] = useState<number | null>(null);
   useEffect(() => {
@@ -44,7 +44,7 @@ export function Countdown({ to, label }: { to: string; label: string }) {
   );
 }
 
-/** Product preview that flattens from a 3D tilt as it scrolls into view (Linear). */
+/** Product preview that flattens from a 3D tilt as it scrolls into view. */
 export function TiltOnScroll({ children }: { children: React.ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -71,7 +71,7 @@ export function TiltOnScroll({ children }: { children: React.ReactNode }) {
   return <div ref={ref} className="tilt">{children}</div>;
 }
 
-/** Cursor-following spotlight on cards (Vercel / Linear). */
+/** Cursor-following spotlight on cards. */
 export function Spotlight({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div
@@ -87,7 +87,7 @@ export function Spotlight({ children, className = "" }: { children: React.ReactN
   );
 }
 
-/** Flowing gradient ribbon in brand colours (Stripe's hero wave, drawn on canvas). */
+/** Flowing gradient ribbon in brand colours, drawn on canvas. */
 export function Ribbon({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {

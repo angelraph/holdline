@@ -6,7 +6,7 @@ export type Role = "vision" | "fast" | "compose" | "reason";
 
 export const ROLE_WHY: Record<Role, string> = {
   vision: "Vision-language Nemotron reads photos and scans verbatim.",
-  fast: "Small, fast Nemotron for narrow labeling and translation — cheap, low latency.",
+  fast: "Small, fast Nemotron for narrow labeling and translation. Cheap, low latency.",
   compose: "Mid-size Nemotron writes the plain-language summary, anchored to sentence IDs.",
   reason: "Nemotron 3 Ultra runs once, on the hard part: letter vs. regulation.",
 };

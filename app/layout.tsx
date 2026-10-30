@@ -12,10 +12,10 @@ const site = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_PROJECT_PRO
 
 export const metadata: Metadata = {
   metadataBase: new URL(site),
-  title: { default: "Holdline — Keep your services. Fight back.", template: "%s · Holdline" },
+  title: { default: "Holdline: Keep your services. Fight back.", template: "%s · Holdline" },
   description:
     "Holdline checks a letter that cuts your services or benefits against the federal rule that governs it: the real deadline, what the law requires that is missing, and a reply you can send tonight. Every line is a quote or a blank.",
-  openGraph: { type: "website", siteName: "Holdline", title: "Holdline — Keep your services. Fight back." },
+  openGraph: { type: "website", siteName: "Holdline", title: "Holdline: Keep your services. Fight back." },
   twitter: { card: "summary_large_image" },
 };
 

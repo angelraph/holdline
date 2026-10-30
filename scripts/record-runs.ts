@@ -1,4 +1,4 @@
-// npm run record — runs each sample live (Nemotron + Tavily) and saves the result to
+// npm run record: runs each sample live (Nemotron + Tavily) and saves the result to
 // samples/recorded/<id>.json. The app replays these, clearly labelled, only when no
 // Nebius key is configured, so the hosted demo still shows a real model run.
 import "dotenv/config";

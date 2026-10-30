@@ -156,7 +156,7 @@ export default function Home() {
             <h1>{mode === "send" ? "Check your notice before it goes out." : "Got a letter that cuts your services or benefits?"}</h1>
             <p>
               {mode === "send"
-                ? "Holdline checks a draft notice against the federal rule for what it must contain, and how hard it is to read — before a family gets it."
+                ? "Holdline checks a draft notice against the federal rule for what it must contain, and how hard it is to read, before a family gets it."
                 : "Holdline checks it against the law. You get the real deadline to keep what you have, the parts the law requires that are missing, and a reply you can send tonight. Every line is a quote or a blank."}
             </p>
           </section>
@@ -243,7 +243,7 @@ export default function Home() {
           <div className="how">
             <div><b>1 · The real deadline</b><span>Dates are read from the page by code. “Within 10 days of this notice” becomes a calendar date, with the math shown.</span></div>
             <div><b>2 · What the law requires</b><span>NVIDIA Nemotron checks the letter against the regulation’s own list, pulled live from ecfr.gov. Every finding points to a sentence.</span></div>
-            <div><b>3 · A reply and real help</b><span>A reply made of fixed wording, quotes, and blanks — plus your local Parent Center and legal aid, found on trusted sites only.</span></div>
+            <div><b>3 · A reply and real help</b><span>A reply made of fixed wording, quotes, and blanks, plus your local Parent Center and legal aid, found on trusted sites only.</span></div>
           </div>
 
           <div className="proof">

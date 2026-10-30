@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "For organizations", description: "Se
 
 const WHO = [
   { k: "Schools & districts", h: "Check a prior written notice before it goes home", p: "Sender mode lists every required part of 34 CFR 300.503(b) that a draft is missing, flags citations that don't exist, and scores reading level against plain-language guidance." },
-  { k: "State & county agencies", h: "Fix a notice before a court has to", p: "Check Medicaid and SNAP adverse-action notices against 42 CFR 431.210 and 7 CFR 273.13 before they're mailed — the content rules courts enforce." },
+  { k: "State & county agencies", h: "Fix a notice before a court has to", p: "Check Medicaid and SNAP adverse-action notices against 42 CFR 431.210 and 7 CFR 273.13 before they're mailed. These are the content rules courts enforce." },
   { k: "Parent centers & legal aid", h: "Triage a stack of letters in minutes", p: "Every check produces a printable evidence packet: deadline with the math, each required part with the law's words and the letter's words, and a ready reply." },
 ];
 

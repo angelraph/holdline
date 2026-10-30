@@ -10,7 +10,7 @@ const GROUPS = [
     h: "School and special education",
     items: [
       { t: "Find your Parent Center", d: "Every state has a federally funded Parent Training and Information Center that helps families of children with disabilities, for free.", u: "https://www.parentcenterhub.org/find-your-center/", host: "parentcenterhub.org" },
-      { t: "CADRE — dispute resolution", d: "The national center on dispute resolution in special education: mediation, IEP facilitation, due process, and state complaints explained.", u: "https://www.cadreworks.org/", host: "cadreworks.org" },
+      { t: "CADRE: dispute resolution", d: "The national center on dispute resolution in special education: mediation, IEP facilitation, due process, and state complaints explained.", u: "https://www.cadreworks.org/", host: "cadreworks.org" },
       { t: "Protection & Advocacy agencies", d: "Each state's disability rights agency, which can provide legal help to people with disabilities.", u: "https://www.ndrn.org/about/ndrn-member-agencies/", host: "ndrn.org" },
     ],
   },
@@ -60,7 +60,7 @@ export default function GetHelp() {
           ))}
           <div className="card2" style={{ borderColor: "rgba(255,107,94,0.35)" }}>
             <h3>Is your deadline very close?</h3>
-            <p>Don&apos;t wait for an appointment. Most agencies accept a hearing request by phone or in writing — the number is usually on the letter. Ask for the hearing first and say you want your current services or benefits to continue; get help with the details after. Holdline&apos;s reply letter is written to be sent as-is.</p>
+            <p>Don&apos;t wait for an appointment. Most agencies accept a hearing request by phone or in writing, and the number is usually on the letter. Ask for the hearing first and say you want your current services or benefits to continue; get help with the details after. Holdline&apos;s reply letter is written to be sent as-is.</p>
           </div>
         </div>
       </section>

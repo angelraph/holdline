@@ -54,7 +54,7 @@ export const medicaidAdverse: RulePack = {
       sourceId: S210,
       sourceQuote: "A clear statement of the specific reasons supporting the intended action",
       label: "The specific reasons",
-      plain: "The specific reason for the decision about you — not a general category.",
+      plain: "The specific reason for the decision about you, not a general category.",
       ask: "a clear statement of the specific reasons supporting the intended action",
       keywords: [/because/i, /\breason/i, /due to/i, /we did not receive/i, /income/i],
     },
@@ -103,7 +103,7 @@ export const medicaidAdverse: RulePack = {
     },
   ],
   reply: {
-    subject: "Request for fair hearing and continued coverage — Case [CASE NUMBER]",
+    subject: "Request for fair hearing and continued coverage, Case [CASE NUMBER]",
     opening: "My name is [YOUR NAME]. I received the agency's notice dated [NOTICE DATE] about my Medicaid coverage.",
     disagree: "I disagree with this action and I am requesting a fair hearing.",
     keepIt: "I am requesting that my coverage continue while the hearing is pending, as provided in 42 CFR 431.230(a).",

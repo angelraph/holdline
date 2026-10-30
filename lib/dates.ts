@@ -129,14 +129,14 @@ export function computeRelative(rel: RelativeDeadline, noticeIso: string, notice
   } else {
     iso = addBusinessDays(noticeIso, rel.count);
     steps.push(`${formatLong(noticeIso)} + ${rel.count} weekdays (Saturdays and Sundays skipped) = ${formatLong(iso)}.`);
-    steps.push("Holidays are not skipped, so this is the earliest the deadline could be — the safe date to use.");
+    steps.push("Holidays are not skipped, so this is the earliest the deadline could be, which is the safe date to use.");
     conservative = true;
     if (rel.unit === "school") {
       steps.push("The letter counts school days. School breaks can push the real deadline later; this date is the earliest possible.");
     }
   }
   if (rel.anchor === "receipt") {
-    steps.push("The letter counts from the day you received it. This uses the letter date, which is the earliest possible start — the safe choice.");
+    steps.push("The letter counts from the day you received it. This uses the letter date, which is the earliest possible start, which is the safe choice.");
     conservative = true;
   }
   return { iso, steps, conservative };

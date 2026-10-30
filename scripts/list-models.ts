@@ -1,4 +1,4 @@
-// npm run models — lists the Nemotron models your Token Factory key can use and which
+// npm run models: lists the Nemotron models your Token Factory key can use and which
 // one Holdline picks for each role.
 import "dotenv/config";
 import { hasNebius, listModels, resolveModel, type Role } from "../lib/nebius";

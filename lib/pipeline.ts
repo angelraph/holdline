@@ -73,7 +73,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   const todayDate = fromIso(today);
   const mode = input.mode ?? "receive";
 
-  // 1. Ingest -------------------------------------------------------------------
+  // 1. Ingest
   let docText = (input.text ?? "").replace(/\r\n/g, "\n");
   if (input.file) {
     const t0 = Date.now();
@@ -109,11 +109,11 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   const sentences = splitSentences(docText);
   const ids = new Set(sentences.map((s) => s.id));
 
-  // 2. Notice type -----------------------------------------------------------------
+  // 2. Notice type
   const pack: RulePack = (input.packId && input.packId !== "auto" && getPack(input.packId)) || detectPack(docText);
   rec.add({ id: "pack", label: `Rule pack: ${pack.short}`, kind: "code", status: "ok", why: "Pattern match on the letter's own words picks which law to check it against.", ms: 0, detail: input.packId && input.packId !== "auto" ? "chosen by user" : "detected from letter text" });
 
-  // 3. Dates: found by code, labeled by Nemotron -------------------------------------
+  // 3. Dates: found by code, labeled by Nemotron
   const t3 = Date.now();
   const found = findDates(docText, todayDate);
   const rel = findRelativeDeadlines(docText);
@@ -133,7 +133,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
         schema: z.object({ roles: z.array(z.object({ id: z.string(), role: z.string() })) }),
         system:
           'You label dates in an official letter. For each date id, choose one role: "notice_date" (the date the letter was written or mailed), "effective" (when the change or action takes effect), "keep_by" (act by this date to keep current services or benefits), "respond_by" (another deadline to respond, appeal, or request a hearing), "meeting" (a scheduled meeting), "other". Use only the given ids. Reply with JSON: {"roles":[{"id":"d0","role":"notice_date"}]}',
-        user: found.map((d) => `${d.id}: "${d.text}" — in: "${d.context}"`).join("\n"),
+        user: found.map((d) => `${d.id}: "${d.text}" in: "${d.context}"`).join("\n"),
       });
       for (const { id, role } of r.data.roles) {
         const cand = found.find((d) => d.id === id);
@@ -151,7 +151,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   }
   })();
 
-  // 4. Regulation text: Tavily Extract, then eCFR API, then bundled snapshot ---------
+  // 4. Regulation text: Tavily Extract, then eCFR API, then bundled snapshot
   const sources: SourceUsed[] = [];
   const regsTask = (async () => {
   const t4 = Date.now();
@@ -200,7 +200,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   });
   })();
 
-  // 5. Completeness check: Nemotron Ultra judges, code verifies ----------------------
+  // 5. Completeness check: Nemotron Ultra judges, code verifies
   const elements: ElementResult[] = [];
   let elementClaimsRejected = 0;
   const base = (e: RulePack["elements"][number]) => ({
@@ -257,7 +257,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   }
   })();
 
-  // 6. Citations printed in the letter --------------------------------------------
+  // 6. Citations printed in the letter
   let offAllowlistRejected = 0;
   const cites: CitationResult[] = [];
   const citeTask = (async () => {
@@ -271,7 +271,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
         status: st === null ? "unchecked" : st.status === "exists" ? "verified" : "not_found",
         url: st && st.status !== "missing" ? url : undefined,
         via: "eCFR API",
-        note: st === null ? "eCFR could not be reached" : st.status === "exists" ? st.heading : st.status === "reserved" ? `eCFR lists this section as "${st.heading}" — it contains no rule` : "No such section in the Code of Federal Regulations",
+        note: st === null ? "eCFR could not be reached" : st.status === "exists" ? st.heading : st.status === "reserved" ? `eCFR lists this section as "${st.heading}", so it contains no rule` : "No such section in the Code of Federal Regulations",
       });
       continue;
     }
@@ -294,7 +294,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
     rec.add({ id: "cites", label: "Check citations printed in the letter", kind: "search", status: "ok", why: "A citation that does not exist is a red flag. CFR sections are checked against eCFR; others via Tavily on allowed domains only.", ms: Date.now() - t6, detail: `${cites.filter((c) => c.status === "verified").length} verified, ${cites.filter((c) => c.status === "not_found").length} not found, ${cites.filter((c) => c.status === "unchecked").length} unchecked`, urls: cites.map((c) => c.url).filter(Boolean) as string[] });
   })();
 
-  // 8. Plain-language summary: Nemotron writes, code guards --------------------------
+  // 8. Plain-language summary: Nemotron writes, code guards
   let summary: Bullet[] = [];
   let summaryDropped = 0;
   const summaryTask = (async () => {
@@ -326,7 +326,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   }
   })();
 
-  // 10. Find help (Tavily, domain-locked) --------------------------------------------
+  // 10. Find help (Tavily, domain-locked)
   const state = Object.entries(STATE_ABBR).find(([, a]) => a === input.state?.toUpperCase())?.[0] || input.state || detectState(docText);
   const help: HelpGroup[] = [];
   const helpTask = (async () => {
@@ -367,7 +367,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   await Promise.all([labelTask, regsTask, auditTask, citeTask, summaryTask, helpTask]);
   const dates = found.map((d) => ({ ...d, role: roles.get(d.id) ?? guessRole(d, docText) }));
 
-  // 7. The Clock (deterministic) ---------------------------------------------------
+  // 7. The Clock (deterministic)
   const noticeDate = dates.find((d) => d.role === "notice_date");
   const ruleFor = (role: DateRole): ClockRule | undefined => pack.clock.find((c) => c.role === role);
   const ruleView = (r: ClockRule) => ({ cite: r.cite, quote: r.sourceQuote, url: pack.sources.find((s) => s.id === r.sourceId)!.url, meaning: r.meaning, action: r.action });
@@ -450,9 +450,9 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   const primary = upcoming(["keep", "respond"]) ?? upcoming(["effective", "hearing_window", "meeting"]) ?? items[0];
   const unreadable = !primary;
   if (unreadable && !unreadableReason) unreadableReason = "No deadline or effective date could be found printed on this letter. Ask the sender, in writing, for the date the change takes effect.";
-  rec.add({ id: "clock", label: "Compute the deadlines", kind: "code", status: "ok", why: "Date math is done in code from the exact sentence, with every step shown.", ms: 0, detail: primary ? `${primary.label}: ${formatLong(primary.iso)} (${primary.daysLeft} days)` : "no verifiable date — clock shows unreadable" });
+  rec.add({ id: "clock", label: "Compute the deadlines", kind: "code", status: "ok", why: "Date math is done in code from the exact sentence, with every step shown.", ms: 0, detail: primary ? `${primary.label}: ${formatLong(primary.iso)} (${primary.daysLeft} days)` : "no verifiable date, so the clock shows unreadable" });
 
-  // 9. Translation: quotes stay original; translated text is fact-guarded --------------
+  // 9. Translation: quotes stay original; translated text is fact-guarded
   let translation: Audit["translation"];
   let translationDropped = 0;
   const lang = input.lang && input.lang !== "en" ? input.lang : undefined;
@@ -485,7 +485,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
     }
   }
 
-  // 11. Reply (deterministic) ------------------------------------------------------
+  // 11. Reply (deterministic)
   const keep = items.find((i) => i.kind === "keep" && i.daysLeft >= 0);
   const reply = mode === "receive" ? buildReply({ pack, elements, sentences, noticeDateText: noticeDate?.text, keep }) : "";
 

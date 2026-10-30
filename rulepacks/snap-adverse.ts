@@ -135,7 +135,7 @@ export const snapAdverse: RulePack = {
     label: "Last day to request a hearing (90-day window)",
   },
   reply: {
-    subject: "Request for fair hearing and continued benefits — Case [CASE NUMBER]",
+    subject: "Request for fair hearing and continued benefits, Case [CASE NUMBER]",
     opening: "My name is [YOUR NAME]. My household received the notice dated [NOTICE DATE] about our SNAP benefits.",
     disagree: "We disagree with this action and we are requesting a fair hearing.",
     keepIt: "We request that our benefits continue at the current level while the hearing is pending, as provided in 7 CFR 273.15(k)(1).",

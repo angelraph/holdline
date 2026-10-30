@@ -13,7 +13,7 @@ async function main() {
     for (const i of a.clock.items) console.log(`  clock ${i.kind} ${i.iso} (${i.daysLeft}d) ${i.label}`);
     if (a.clock.unreadable) console.log("  UNREADABLE:", a.clock.unreadableReason);
     for (const e of a.elements) console.log(`  ${e.status.padEnd(7)} ${e.cite} ${e.label} ${e.sentenceIds.join(",")}`);
-    for (const c of a.citations) console.log(`  cite ${c.status} ${c.text} — ${c.note ?? ""}`);
+    for (const c of a.citations) console.log(`  cite ${c.status} ${c.text}: ${c.note ?? ""}`);
     for (const b of a.summary) console.log(`  • ${b.text} [${b.sentenceIds}]`);
     if (a.translation) console.log("  translation:", a.translation.bullets.join(" | "));
     for (const g of a.help) console.log(`  help ${g.label}: ${g.results.map((r) => r.url).join(" , ")}`);
