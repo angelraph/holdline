@@ -363,6 +363,7 @@ export function RunLog({ audit }: { audit: Audit }) {
           <span className="spacer" style={{ flex: 1 }} />
           <span className="cite">{models.length} Nemotron model{models.length === 1 ? "" : "s"} · {(ms / 1000).toFixed(1)}s · est. ${cost.toFixed(4)}</span>
         </summary>
+        <div style={{ overflowX: "auto" }}>
         <table>
           <thead><tr><th>Step</th><th>Engine</th><th>Time</th><th>Tokens</th><th>Notes</th></tr></thead>
           <tbody>
@@ -383,6 +384,7 @@ export function RunLog({ audit }: { audit: Audit }) {
             ))}
           </tbody>
         </table>
+        </div>
         <div className="src" style={{ marginTop: 8 }}>Costs are estimates from public per-token prices. Nothing you upload is stored.</div>
       </details>
     </section>

@@ -267,10 +267,10 @@ a.card2:hover { border-color: rgba(34, 211, 143, 0.35); transform: translateY(-2
   .s-links { display: none; }
   .s-burger { display: inline-block; }
   .s-nav-in { justify-content: space-between; }
-  .hero2-grid { grid-template-columns: 1fr; text-align: left; min-height: 0; padding-top: 24px; }
+  .hero2-grid { grid-template-columns: minmax(0, 1fr); text-align: left; min-height: 0; padding-top: 24px; }
   .hero2-grid .glowmark { order: -1; width: 200px !important; height: 200px !important; justify-self: start; }
   .bento .b, .bento .b.w3, .bento .b.w4 { grid-column: span 6; }
-  .split, .grid2 { grid-template-columns: 1fr; }
+  .split, .grid2 { grid-template-columns: minmax(0, 1fr); }
   .grid3 { grid-template-columns: 1fr 1fr; }
   .stats { grid-template-columns: 1fr 1fr; }
   .stats div:nth-child(2) { border-right: 0; }
@@ -282,12 +282,12 @@ a.card2:hover { border-color: rgba(34, 211, 143, 0.35); transform: translateY(-2
 @media (max-width: 640px) {
   .hide-sm { display: none; }
   .sec { padding: 72px 0; }
-  .mock-body { grid-template-columns: 1fr; }
+  .mock-body { grid-template-columns: minmax(0, 1fr); }
   .mock-letter { border-right: 0; border-bottom: 1px solid var(--s-line); }
   .strip { grid-template-columns: 1fr 1fr; }
   .strip div:nth-child(2n) { border-right: 0; }
   .strip div { border-bottom: 1px solid var(--s-line); }
-  .grid3, .steps2 { grid-template-columns: 1fr; }
+  .grid3, .steps2 { grid-template-columns: minmax(0, 1fr); }
   .steps2 > * { border-right: 0; padding-left: 0; border-bottom: 1px solid var(--s-line); }
   .table2 { font-size: 13.5px; }
   .phero { padding: 64px 0 44px; }

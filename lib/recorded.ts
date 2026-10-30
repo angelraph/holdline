@@ -16,7 +16,7 @@ export function recordedFor(input: AnalyzeInput): Audit | null {
   const f = path.join(process.cwd(), "samples", "recorded", `${s.id}.json`);
   if (!fs.existsSync(f)) return null;
   const a = JSON.parse(fs.readFileSync(f, "utf8")) as Audit;
-  const today = input.today ?? toIso(new Date());
+  const today = input.today && /^\d{4}-\d{2}-\d{2}$/.test(input.today) ? input.today : toIso(new Date());
   const t = fromIso(today);
   const fix = <T extends { iso: string; daysLeft: number }>(i: T) => ({ ...i, daysLeft: daysUntil(i.iso, t) });
   a.clock.items = a.clock.items.map(fix);

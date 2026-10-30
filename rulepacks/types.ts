@@ -49,6 +49,7 @@ export type HelpQuery = {
   domains: (state: string) => string[];
   mustMentionState?: boolean; // drop results that are not about the user's state
   allowPdf?: boolean;
+  topic?: RegExp; // drop results whose title + URL are not about this topic
   fixed?: { title: string; url: string }[]; // trusted directory links always shown first
 };
 

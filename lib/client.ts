@@ -1,6 +1,10 @@
 "use client";
 import type { AnalyzeInput, Audit, RunStep, StreamEvent } from "./types";
 
+function localIsoDate(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export async function analyze(
   input: AnalyzeInput,
   on: { step: (s: RunStep) => void; status: (m: string) => void },
@@ -8,7 +12,8 @@ export async function analyze(
   const res = await fetch("/api/analyze", {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(input),
+    // Count days left from the family's own calendar day, not the server's (UTC).
+    body: JSON.stringify({ today: localIsoDate(), ...input }),
   });
   if (!res.ok || !res.body) {
     const j = await res.json().catch(() => ({}));

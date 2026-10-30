@@ -38,6 +38,12 @@ function numbered(sentences: Sentence[]) {
   return sentences.map((s) => `[${s.id}] ${s.text.replace(/\s+/g, " ")}`).join("\n");
 }
 
+// Same page regardless of http/https, case, or a trailing slash.
+function sameUrl(a: string, b: string) {
+  const norm = (u: string) => u.toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
+  return norm(a) === norm(b);
+}
+
 function detectState(text: string): string | undefined {
   const head = text.slice(0, 1500);
   let best: { name: string; at: number } | undefined;
@@ -56,7 +62,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   const key = input.nebiusKey || undefined;
   const live = hasNebius(key);
   const tavily = hasTavily();
-  const today = input.today ?? toIso(new Date());
+  const today = input.today && /^\d{4}-\d{2}-\d{2}$/.test(input.today) ? input.today : toIso(new Date());
   const todayDate = fromIso(today);
   const mode = input.mode ?? "receive";
 
@@ -330,6 +336,9 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
           const relevant = hits
             .filter((x) => hostAllowed(x.url, domains))
             .filter((x) => h.allowPdf || !/\.pdf($|\?)/i.test(x.url))
+            .filter((x) => !h.topic || h.topic.test(`${x.title} ${x.url}`) || new URL(x.url).pathname.split("/").filter(Boolean).length <= 1)
+            .filter((x) => !/sign[ -]?on|sign[ -]?in|log[ -]?in/i.test(`${x.title} ${x.url}`))
+            .filter((x, i, all) => all.findIndex((y) => sameUrl(y.url, x.url)) === i)
             .filter((x) => !h.mustMentionState || `${x.title} ${x.content} ${x.url}`.toLowerCase().includes(st) || new URL(x.url).hostname.includes(st.replace(/[^a-z]/g, "")));
           const results = [
             ...(h.fixed ?? []).map((f) => ({ title: f.title, url: f.url })),
