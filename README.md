@@ -3,6 +3,8 @@
 **Check a letter that cuts your services or benefits against the law that governs it.**
 Holdline gives a family three things in about 30 seconds: the real deadline to keep what they have, the parts the law requires that the letter is missing, and a reply they can send tonight. Every line is a quote or a blank.
 
+**Live demo: https://holdline-rho.vercel.app** · try a sample: [school notice](https://holdline-rho.vercel.app/check?sample=school-speech) · [Medicaid notice](https://holdline-rho.vercel.app/check?sample=medicaid-renewal) · [SNAP notice](https://holdline-rho.vercel.app/check?sample=snap-reduction)
+
 Built for the **Nebius x NVIDIA Global AI Hackathon** · Track: **Best Apps and Agents** · Runs on **NVIDIA Nemotron via Nebius Token Factory** · Search by **Tavily** · MIT licensed.
 
 ---
