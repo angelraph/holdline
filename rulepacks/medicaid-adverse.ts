@@ -116,7 +116,7 @@ export const medicaidAdverse: RulePack = {
       label: "Free legal help",
       query: (s) => `${s} free legal aid Medicaid fair hearing`,
       domains: (s) => legalAidDomains(s),
-      topic: /medicaid|medi-?cal|health|public[ -]?benefit|hearing|appeal/i,
+      topic: /medicaid|medi-cal|health|public[ -]?benefit|hearing|appeal/i,
       mustMentionState: true,
       fixed: [{ title: "Find free legal aid near you (Legal Services Corporation)", url: "https://www.lsc.gov/about-lsc/what-legal-aid/get-legal-help" }],
     },

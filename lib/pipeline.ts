@@ -38,10 +38,17 @@ function numbered(sentences: Sentence[]) {
   return sentences.map((s) => `[${s.id}] ${s.text.replace(/\s+/g, " ")}`).join("\n");
 }
 
-// Same page regardless of http/https, case, or a trailing slash.
+// Same page regardless of http/https, www, case, a trailing slash, or a query string.
 function sameUrl(a: string, b: string) {
-  const norm = (u: string) => u.toLowerCase().replace(/^https?:\/\//, "").replace(/\/$/, "");
+  const norm = (u: string) => u.toLowerCase().replace(/^https?:\/\/(www\.)?/, "").replace(/[?#].*$/, "").replace(/\/$/, "");
   return norm(a) === norm(b);
+}
+
+// National directories put each state under a path like lawhelp.org/sc/...; drop other states' pages.
+const STATE_CODES = new Set(Object.values(STATE_ABBR).map((a) => a.toLowerCase()));
+function otherStatePath(url: string, state: string) {
+  const first = new URL(url).pathname.split("/").filter(Boolean)[0]?.toLowerCase();
+  return !!first && STATE_CODES.has(first) && first !== STATE_ABBR[state]?.toLowerCase();
 }
 
 function detectState(text: string): string | undefined {
@@ -320,7 +327,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
   })();
 
   // 10. Find help (Tavily, domain-locked) --------------------------------------------
-  const state = input.state || detectState(docText);
+  const state = Object.entries(STATE_ABBR).find(([, a]) => a === input.state?.toUpperCase())?.[0] || input.state || detectState(docText);
   const help: HelpGroup[] = [];
   const helpTask = (async () => {
   if (mode === "receive" && tavily && state) {
@@ -338,6 +345,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
             .filter((x) => h.allowPdf || !/\.pdf($|\?)/i.test(x.url))
             .filter((x) => !h.topic || h.topic.test(`${x.title} ${x.url}`) || new URL(x.url).pathname.split("/").filter(Boolean).length <= 1)
             .filter((x) => !/sign[ -]?on|sign[ -]?in|log[ -]?in/i.test(`${x.title} ${x.url}`))
+            .filter((x) => !otherStatePath(x.url, state))
             .filter((x, i, all) => all.findIndex((y) => sameUrl(y.url, x.url)) === i)
             .filter((x) => !h.mustMentionState || `${x.title} ${x.content} ${x.url}`.toLowerCase().includes(st) || new URL(x.url).hostname.includes(st.replace(/[^a-z]/g, "")));
           const results = [
