@@ -139,11 +139,12 @@ evals/, scripts/     Eval suite, rule-pack verifier, model listing, run recorder
 - **OpenAI-compatible API**: switching the base URL was the whole integration. `GET /v1/models` let the app pick Nemotron models per role automatically.
 - **Five Nemotron models on one key** (Nano, Lightning, Super, Super VL, Ultra) made a real routing design possible: cheap models for narrow jobs, Ultra once for the hard judgment.
 - **Nemotron 3 Ultra** was precise on the legal-completeness task. It separated "mentions the rule" from "meets the rule" (*partial* vs *found*) the way an advocate would, in about 3 seconds per letter.
-- **`response_format: json_object`** worked on every Nemotron model we used.
+- **`response_format: json_object`** returned valid JSON on every Nemotron model we used (with one catch on prose, below).
 - **Cost**: about $0.005 per full letter check across four model calls.
 
 **Friction and suggestions**
 - **Thinking toggle**: passing `chat_template_kwargs: { enable_thinking: false }` made Nemotron 3 Nano about 3x faster (0.6s vs 2.0s, 54 vs 206 output tokens) with the same translation quality. This is a big win that is easy to miss; it deserves a prominent place in the Token Factory docs and playground.
+- **`response_format: json_object` changed the prose inside the JSON** on Nemotron 3 Super: with it on, the summary came back as "your childs speech help" and "oneonone talks", every time, at temperature 0. With it off, the same prompt gave "child's" and "one-on-one", still as valid JSON. We now skip JSON mode for the summary and parse the reply ourselves.
 - **Nemotron 3.5 Lightning** returned non-JSON on our structured translation prompt where Nano did not. A note on which models are tuned for JSON output would help.
 - **Onboarding**: sign-up asked for a card before we found the hackathon promo code, and the first card was declined. Showing the promo-code field at sign-up would remove that blocker for participants.
 

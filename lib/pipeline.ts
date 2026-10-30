@@ -305,10 +305,11 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
         role: "compose",
         key,
         think: false,
+        jsonMode: false,
         maxTokens: 1200,
         schema: z.object({ bullets: z.array(z.object({ text: z.string(), sentences: z.array(z.number()) })) }),
         system:
-          "You explain an official letter to a stressed family at a 6th-grade reading level. Write 3 to 6 short bullets about what the letter says. Each bullet must list the sentence numbers it is based on. Use only facts in those sentences: do not add numbers, dates, names, amounts, or legal claims that are not in them. Keep key amounts and dates exactly as written, because the family needs them. Keep what each deadline counts from exactly as the letter says it (for example 'the date of this notice'); never say 'today' or 'from now'. Keep the letter's tense: what will happen is still in the future. Use short, everyday words, not the letter's wording. No advice. JSON only: {\"bullets\":[{\"text\":\"...\",\"sentences\":[1,2]}]}",
+          "You explain an official letter to a stressed family at a 6th-grade reading level. Write 3 to 6 short bullets about what the letter says. Each bullet must list the sentence numbers it is based on. Use only facts in those sentences: do not add numbers, dates, names, amounts, or legal claims that are not in them. Keep key amounts and dates exactly as written, because the family needs them. Keep what each deadline counts from exactly as the letter says it (for example 'the date of this notice'); never say 'today' or 'from now'. Keep the letter's tense: what will happen is still in the future. Use short, everyday words, not the letter's wording. Write each bullet as one complete sentence with normal punctuation: apostrophes (child's), hyphens (one-on-one), commas in dates (November 16, 2026), and a period at the end. No advice. JSON only: {\"bullets\":[{\"text\":\"...\",\"sentences\":[1,2]}]}",
         user: numbered(sentences),
       });
       for (const b of r.data.bullets) {
@@ -316,7 +317,7 @@ export async function runPipeline(input: AnalyzeInput, emit: Emit): Promise<Audi
         const srcText = sids.map((n) => sentences[n].text).join(" ");
         const srcTok = new Set(factTokens(srcText));
         const ok = sids.length > 0 && factTokens(b.text).every((t) => srcTok.has(t) || srcText.includes(t)) && newTimeAnchors(b.text, srcText).length === 0 && newDoneWords(b.text, srcText).length === 0;
-        if (ok) summary.push({ text: b.text, sentenceIds: sids });
+        if (ok) summary.push({ text: /[.!?]$/.test(b.text.trim()) ? b.text.trim() : `${b.text.trim()}.`, sentenceIds: sids });
         else summaryDropped++;
       }
       rec.add({ id: "summary", label: "Plain-language summary", kind: "model", status: "ok", why: ROLE_WHY.compose, model: r.model, ms: r.ms, tokensIn: r.tokensIn, tokensOut: r.tokensOut, costUsd: r.costUsd, detail: `${summary.length} kept, ${summaryDropped} dropped by the fact guard (a number, date, time word, or "already happened" word not in the cited sentences)` });

@@ -110,6 +110,7 @@ export async function chatJSON<T>(opts: {
   key?: string;
   maxTokens?: number;
   think?: boolean; // false turns off Nemotron reasoning for simple tasks (≈3x faster)
+  jsonMode?: boolean; // false skips response_format; JSON mode drops apostrophes and hyphens from Nemotron 3 Super prose
 }): Promise<ModelCall<T>> {
   const model = await resolveModel(opts.role, opts.key);
   const c = client(opts.key);
@@ -120,7 +121,7 @@ export async function chatJSON<T>(opts: {
     { role: "user", content: opts.user },
   ];
   let lastErr: unknown;
-  let useFormat = true;
+  let useFormat = opts.jsonMode !== false;
   let useThinkFlag = opts.think === false;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
